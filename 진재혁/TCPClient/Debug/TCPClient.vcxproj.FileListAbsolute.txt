@@ -1,0 +1,4 @@
+E:\Study\종합설계기획\TCPClient\Debug\TCPClient.exe
+E:\Study\종합설계기획\TCPClient\Debug\TCPClient.pdb
+E:\Study\네트워크게임프로그래밍\텀프\NGP_2020_2\TCPClient\Debug\TCPClient.exe
+E:\Study\네트워크게임프로그래밍\텀프\NGP_2020_2\TCPClient\Debug\TCPClient.pdb

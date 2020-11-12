@@ -1,0 +1,3 @@
+﻿  TCPClient.cpp
+E:\Study\네트워크게임프로그래밍\텀프\NGP_2020_2\TCPClient\TCPClient.cpp(79,34): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  TCPClient.vcxproj -> E:\Study\네트워크게임프로그래밍\텀프\NGP_2020_2\TCPClient\Debug\TCPClient.exe
