@@ -1,7 +1,15 @@
 #include "SceneData.h"
-
 SceneData::SceneData()
 {
+	for (int i = 0; i < MAP_SIZE; i++)
+	{
+		for (int j = 0; j < MAP_SIZE; j++)
+		{
+			m_mapData[i][j].isBomb = false;
+			m_mapData[i][j].isRock = false;
+			m_mapData[i][j].item = EMPTY;
+		}
+	}
 }
 
 SceneData::~SceneData()
@@ -46,3 +54,27 @@ void SceneData::setKeyInput(SOCKET socket, KeyInput key)
 		}
 	}
 }
+
+
+void SceneData::setPlayer(SOCKET socket)
+{
+	m_playerStatus[m_nPlayer].playerSocket = socket;
+	m_playerStatus[m_nPlayer].isAlive = true;
+	m_playerStatus[m_nPlayer].position = { m_nPlayer * 10, m_nPlayer * 10 };
+	m_playerStatus[m_nPlayer].power = 0;
+	m_playerStatus[m_nPlayer].speed = 0;
+	++m_nPlayer;
+}
+
+void SceneData::getPlayer(SOCKET socket, PlayerStatus* playerStatus)
+{
+	for (int i = 0; i < MAX_PLAYER; i++)
+	{
+		if (m_playerStatus[i].playerSocket == socket)
+		{
+			playerStatus = &m_playerStatus[i];
+			break;
+		}
+	}
+}
+

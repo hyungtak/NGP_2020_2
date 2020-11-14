@@ -1,5 +1,5 @@
 #pragma comment(lib, "ws2_32")
-#include "ServerGlobalData.h"
+#include "SceneData.h"
 
 #define SERVERPORT 9000
 #define BUFSIZE    512
@@ -37,6 +37,8 @@ int main(int argc, char *argv[])
     float PlayerX = 0, PlayerY = 0;
     float BombX, BombY;
 
+    //SceneData 만들기!
+    SceneData gameSceneData;
 
     // 윈속 초기화
     WSADATA wsa;
@@ -66,6 +68,7 @@ int main(int argc, char *argv[])
     int addrlen;
     char buf[BUFSIZE + 1];
 
+    
     
 
     while (1) {
