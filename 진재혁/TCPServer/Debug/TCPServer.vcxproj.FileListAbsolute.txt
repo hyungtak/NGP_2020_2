@@ -6,3 +6,5 @@ E:\Study\네트워크게임프로그래밍\텀프\NGP_2020_2\TCPServer\Debug\TCP
 E:\Study\네트워크게임프로그래밍\텀프\NGP_2020_2\TCPServer\Debug\TCPServer.pdb
 C:\Users\원휘재\Desktop\git\NGP_2020_2\진재혁\TCPServer\Debug\TCPServer.exe
 C:\Users\원휘재\Desktop\git\NGP_2020_2\진재혁\TCPServer\Debug\TCPServer.pdb
+C:\Users\Administrator\Documents\GitHub\NGP_2020_2\진재혁\TCPServer\Debug\TCPServer.exe
+C:\Users\Administrator\Documents\GitHub\NGP_2020_2\진재혁\TCPServer\Debug\TCPServer.pdb

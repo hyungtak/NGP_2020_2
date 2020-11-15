@@ -31,11 +31,122 @@ void err_display(char *msg)
     LocalFree(lpMsgBuf);
 }
 
-int main(int argc, char *argv[])
+DWORD WINAPI LobbyThread(LPVOID arg)
 {
+    return 0;
+}
+
+
+DWORD WINAPI ProcessThread(LPVOID arg)
+{
+    SOCKET client_sock = (SOCKET)arg;
+    SOCKADDR_IN clientaddr;
+
     int retval;
     float PlayerX = 0, PlayerY = 0;
     float BombX, BombY;
+    char buf[BUFSIZE + 1];
+    int addrlen;
+
+    // 클라이언트 정보 얻기
+    addrlen = sizeof(clientaddr);
+    getpeername(client_sock, (SOCKADDR*)&clientaddr, &addrlen);
+
+    // 클라이언트와 데이터 통신
+    while (1) {
+        // 데이터 받기 (recv())
+        retval = recv(client_sock, buf, 1, 0);    // char : 1byte
+        if (retval == SOCKET_ERROR) {
+            err_display("recv()");
+            break;
+        }
+        else if (retval == 0)
+            break;
+
+
+        for (int i = 0; i < retval; ++i)
+        {
+            switch (buf[i]) {
+            case 72:
+                PlayerY = PlayerY + 1.0f;
+                break;
+
+            case 80:
+                PlayerY = PlayerY - 1.0f;
+                break;
+
+            case 75:
+                PlayerX = PlayerX - 1.0f;
+                break;
+            case 77:
+                PlayerX = PlayerX + 1.0f;
+                break;
+            case ' ':
+                BombX = PlayerX;
+                BombY = PlayerY;
+
+                printf("Space bar! (%f, %f)\n", BombX, BombY);
+                break;
+            }
+        }
+
+
+        // 받은 데이터 출력
+        //buf[retval] = '\0';
+        //printf("[TCP/%s:%d] %s\n", inet_ntoa(clientaddr.sin_addr),
+        //    ntohs(clientaddr.sin_port), buf);
+
+
+        //// 데이터 보내기
+        //retval = send(client_sock, buf, retval, 0);
+        //if (retval == SOCKET_ERROR) {
+        //    err_display("send()");
+        //    break;
+        //}
+
+        //retval = send(client_sock, reinterpret_cast<char *>(&ID), 4, 0);   // 추후 ID를 같이 보내줘야지 여러 마리의 NPC와 다른 플레이어들이 있을때
+                                                                             // 누가 움직였는지 클라이언트에서 알 수 있다.
+
+        // 데이터 보내기 (send())
+        retval = send(client_sock, reinterpret_cast<char*>(&PlayerX), 4, 0);
+        if (retval == SOCKET_ERROR) {
+            err_display("X1 send()");
+//            break;
+        }
+        if (4 != retval) {
+            printf("Data Send Error : x position\n");
+        }
+        retval = send(client_sock, reinterpret_cast<char*>(&PlayerY), 4, 0);
+        if (retval == SOCKET_ERROR) {
+            err_display("Y1 send()");
+//            break;
+        }
+        if (4 != retval) {
+            printf("Data Send Error : y position\n");
+        }
+    }
+
+    return 0;
+
+}
+
+
+DWORD WINAPI GameThread(LPVOID arg)
+{
+    return 0;
+}
+
+typedef struct PlayerState
+{
+    float posX, posY;
+};
+
+
+int main(int argc, char *argv[])
+{
+    int retval;
+    
+    //LobbyThread = CreateThread(NULL, 0, LobbyThread, (LPVOID)client_sock, 0, NULL)
 
     //SceneData 만들기!
     SceneData gameSceneData;
@@ -66,10 +177,9 @@ int main(int argc, char *argv[])
     SOCKET client_sock;
     SOCKADDR_IN clientaddr;
     int addrlen;
-    char buf[BUFSIZE + 1];
 
-    
-    
+    HANDLE PThread[3], GThread, LThread;
+    //HANDLE PThread;
 
     while (1) {
         // accept()
@@ -85,83 +195,12 @@ int main(int argc, char *argv[])
 
         // 접속한 클라이언트 정보 출력
         printf("\n[TCP 서버] 클라이언트 접속: IP 주소=%s, 포트 번호=%d\n",
-            ip_addr, ntohs(clientaddr.sin_port));
+                ip_addr, ntohs(clientaddr.sin_port));
 
-        // 클라이언트와 데이터 통신
-        while (1) {
-            // 데이터 받기
-            retval = recv(client_sock, buf, BUFSIZE, 0);    // char : 1byte
-            if (retval == SOCKET_ERROR) {
-                err_display("recv()");
-                break;
-            }
-            else if (retval == 0)
-                break;
+        PThread[0] = CreateThread(NULL, 0, ProcessThread, (LPVOID)client_sock, 0, NULL);
+        if (PThread[0] == NULL) { closesocket(client_sock); }
+        else { CloseHandle(PThread[0]); }
 
-
-            for (int i = 0; i < retval; ++i)
-            {
-                switch (buf[i]) {
-                case 72:
-                    PlayerY = PlayerY + 1.0f;
-                    break;
-
-                case 80:
-                    PlayerY = PlayerY - 1.0f;
-                    break;
-
-                case 75:
-                    PlayerX = PlayerX - 1.0f;
-                    break;
-                case 77:
-                    PlayerX = PlayerX + 1.0f;
-                    break;
-                case ' ':
-                    BombX = PlayerX;
-                    BombY = PlayerY;
-                    
-                    printf("Space bar! (%f, %f)\n", BombX, BombY);
-                    break;
-                }
-            }
-
-
-            // 받은 데이터 출력
-            //buf[retval] = '\0';
-            //printf("[TCP/%s:%d] %s\n", inet_ntoa(clientaddr.sin_addr),
-            //    ntohs(clientaddr.sin_port), buf);
-
-
-            //// 데이터 보내기
-            //retval = send(client_sock, buf, retval, 0);
-            //if (retval == SOCKET_ERROR) {
-            //    err_display("send()");
-            //    break;
-            //}
-
-            //retval = send(client_sock, reinterpret_cast<char *>(&ID), 4, 0);   // 추후 ID를 같이 보내줘야지 여러 마리의 NPC와 다른 플레이어들이 있을때
-                                                                                 // 누가 움직였는지 클라이언트에서 알 수 있다.
-
-            retval = send(client_sock, reinterpret_cast<char *>(&PlayerX), 4, 0);
-            if (retval == SOCKET_ERROR) {
-                err_display("X1 send()");
-                break;
-            }
-            if (4 != retval) {
-                printf("Data Send Error : x position\n");
-            }
-            retval = send(client_sock, reinterpret_cast<char *>(&PlayerY), 4, 0);
-            if (retval == SOCKET_ERROR) {
-                err_display("Y1 send()");
-                break;
-            }
-            if (4 != retval) {
-                printf("Data Send Error : y position\n");
-            }
-        }
-
-        // closesocket()
-        closesocket(client_sock);
 
         printf("[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n",
             ip_addr, ntohs(clientaddr.sin_port));

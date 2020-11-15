@@ -1,4 +1,5 @@
 #include "SceneData.h"
+
 SceneData::SceneData()
 {
 	for (int i = 0; i < MAP_SIZE; i++)

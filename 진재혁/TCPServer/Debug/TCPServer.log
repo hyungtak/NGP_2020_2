@@ -1,2 +1,3 @@
 ﻿  TCPServer.cpp
-  TCPServer.vcxproj -> C:\Users\원휘재\Desktop\git\NGP_2020_2\진재혁\TCPServer\Debug\TCPServer.exe
+C:\Users\Administrator\Documents\GitHub\NGP_2020_2\진재혁\TCPServer\TCPServer.cpp(142,2): warning C4091: 'typedef ': 변수를 선언하지 않으면 'PlayerState' 왼쪽은 무시됩니다.
+  TCPServer.vcxproj -> C:\Users\Administrator\Documents\GitHub\NGP_2020_2\진재혁\TCPServer\Debug\TCPServer.exe
