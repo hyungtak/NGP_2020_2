@@ -3,6 +3,8 @@
 
 #define SERVERPORT 9000
 #define BUFSIZE    512
+//SceneData 만들기!
+SceneData gameSceneData;
 
 // 소켓 함수 오류 출력 후 종료
 void err_quit(char *msg)
@@ -133,7 +135,7 @@ DWORD WINAPI ProcessThread(LPVOID arg)
 
 DWORD WINAPI GameThread(LPVOID arg)
 {
-    return 0;
+    gameSceneData.update();
 }
 
 typedef struct PlayerState
@@ -148,8 +150,7 @@ int main(int argc, char *argv[])
     
     //LobbyThread = CreateThread(NULL, 0, LobbyThread, (LPVOID)client_sock, 0, NULL)
 
-    //SceneData 만들기!
-    SceneData gameSceneData;
+
 
     // 윈속 초기화
     WSADATA wsa;
