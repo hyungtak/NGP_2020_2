@@ -45,9 +45,9 @@ DWORD WINAPI ProcessThread(LPVOID arg)
     SOCKADDR_IN clientaddr;
 
     int retval;
-    Point Pos {0, 0};
+    Point Pos{ 0 };
+    Point Bomb = Pos;
     KeyInput Input{ 0 };
-    short BombX, BombY;
     char buf[BUFSIZE + 1];
     int addrlen;
 
@@ -58,7 +58,7 @@ DWORD WINAPI ProcessThread(LPVOID arg)
     // 클라이언트와 데이터 통신
     while (1) {
         // 데이터 받기 (recv())
-        retval = recv(client_sock, buf, 1, 0);    // char : 1byte
+        retval = recv(client_sock, (char*)&Input, sizeof(KeyInput), 0);    // char : 1byte
         if (retval == SOCKET_ERROR) {
             err_display("recv()");
             break;
@@ -66,31 +66,18 @@ DWORD WINAPI ProcessThread(LPVOID arg)
         else if (retval == 0)
             break;
 
-
-        for (int i = 0; i < retval; ++i)
+        if (Input.key_Up)
+            Pos.Y = Pos.Y + 1;
+        if (Input.key_Down)
+            Pos.Y = Pos.Y - 1;
+        if (Input.key_Left)
+            Pos.X = Pos.X - 1;
+        if (Input.key_Right)
+            Pos.X = Pos.X + 1;
+        if (Input.key_Space) 
         {
-            switch (buf[i]) {
-            case 72:
-                Pos.Y = Pos.Y + 1;
-                break;
-
-            case 80:
-                Pos.Y = Pos.Y - 1;
-                break;
-
-            case 75:
-                Pos.X = Pos.X - 1;
-                break;
-            case 77:
-                Pos.X = Pos.X + 1;
-                break;
-            case ' ':
-                BombX = Pos.X;
-                BombY = Pos.Y;
-
-                printf("Space bar! (%d, %d)\n", BombX, BombY);
-                break;
-            }
+            Bomb = Pos;
+            printf ("Bomb! (%d, %d)\n", Bomb.X, Bomb.Y);
         }
 
 
@@ -111,21 +98,15 @@ DWORD WINAPI ProcessThread(LPVOID arg)
                                                                              // 누가 움직였는지 클라이언트에서 알 수 있다.
 
         // 데이터 보내기 (send())
-        retval = send(client_sock, reinterpret_cast<char*>(&Pos.X), 4, 0);
-        if (retval == SOCKET_ERROR) {
-            err_display("X1 send()");
-//            break;
+        retval = send(client_sock, (char*)&Pos, sizeof(Point), 0);
+        if (retval == SOCKET_ERROR) 
+        {
+            err_display("XY send()");
+            break;
         }
-        if (4 != retval) {
+        if (4 != retval) 
+        {
             printf("Data Send Error : x position\n");
-        }
-        retval = send(client_sock, reinterpret_cast<char*>(&Pos.Y), 4, 0);
-        if (retval == SOCKET_ERROR) {
-            err_display("Y1 send()");
-//            break;
-        }
-        if (4 != retval) {
-            printf("Data Send Error : y position\n");
         }
     }
 

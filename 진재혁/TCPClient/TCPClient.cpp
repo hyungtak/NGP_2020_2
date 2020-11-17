@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <conio.h>
+#include <iostream>
+
+using namespace std;
 
 #define SERVERIP   "127.0.0.1"
 #define SERVERPORT 9000
@@ -55,12 +58,27 @@ int recvn(SOCKET s, char *buf, int len, int flags)
     return (len - left);
 }
 
+struct KeyInput //키 입력 on off
+{
+    bool key_Up;
+    bool key_Down;
+    bool key_Left;
+    bool key_Right;
+    bool key_Space;
+};
+
+struct Point
+{
+    short X;
+    short Y;
+};
+
+
 int main(int argc, char *argv[])
 {
     int retval;
 
-    float PlayerX;
-    float PlayerY;
+    Point Pos {0, 0};
 
 
     // 윈속 초기화
@@ -88,17 +106,21 @@ int main(int argc, char *argv[])
     // 서버와 데이터 통신
     while (1) {
         // 데이터 입력
-        char ch;
-        if (_kbhit()) {
-            ch = _getch();
-            if (ch == -32)
-                ch = _getch();
-        }
-        else ch = 0;
-
+        KeyInput Input{ 0 };
+        
+        if (GetAsyncKeyState(VK_UP) & 0x8000)
+            Input.key_Up = TRUE;
+        if (GetAsyncKeyState(VK_DOWN) & 0x8000)
+            Input.key_Down = TRUE;
+        if (GetAsyncKeyState(VK_LEFT) & 0x8000)
+            Input.key_Left = TRUE;
+        if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
+            Input.key_Right = TRUE;
+        if (GetAsyncKeyState(VK_SPACE) & 0x8000)
+            Input.key_Space = TRUE;
 
         // 데이터 보내기
-        retval = send(sock, &ch, 1, 0);
+        retval = send(sock, (char*)&Input, sizeof(KeyInput), 0);
         if (retval == SOCKET_ERROR) {
             err_display("send()");
             break;
@@ -109,19 +131,15 @@ int main(int argc, char *argv[])
         //printf("[TCP 클라이언트] %d바이트를 보냈습니다.\n", retval - 1);
 
         // 데이터 받기
-        retval = recvn(sock, reinterpret_cast<char *>(&PlayerX), 4, 0);
+        retval = recvn(sock, (char*)&Pos, sizeof(Point), 0);
         if (retval == SOCKET_ERROR) {
-            err_display("X1 recv()");
+            err_display("recv()");
             break;
         }
-        retval = recvn(sock, reinterpret_cast<char *>(&PlayerY), 4, 0);
-        if (retval == SOCKET_ERROR) {
-            err_display("Y1 recv()");
-            break;
-        }
+        
 
         // 좌표 출력
-        printf("location (%f, %f)\n", PlayerX, PlayerY);
+        printf("location (%d, %d)\n", Pos.X, Pos.Y);
 
         //// 받은 데이터 출력
         //buf[retval] = '\0';

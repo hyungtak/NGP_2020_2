@@ -26,10 +26,10 @@ void SceneData::update()
 			m_playerStatus[i].position.Y -= 1;
 			m_playerStatus[i].key.key_Down = false;
 		}
-		if (m_playerStatus[i].key.key_UP)
+		if (m_playerStatus[i].key.key_Up)
 		{
 			m_playerStatus[i].position.Y += 1;
-			m_playerStatus[i].key.key_UP = false;
+			m_playerStatus[i].key.key_Up = false;
 		}
 		if (m_playerStatus[i].key.key_Left)
 		{
