@@ -88,7 +88,7 @@ DWORD WINAPI ProcessThread(LPVOID arg)
                 BombX = Pos.X;
                 BombY = Pos.Y;
 
-                printf("Space bar! (%f, %f)\n", BombX, BombY);
+                printf("Space bar! (%d, %d)\n", BombX, BombY);
                 break;
             }
         }
