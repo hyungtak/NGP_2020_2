@@ -65,21 +65,12 @@ DWORD WINAPI ProcessThread(LPVOID arg)
         }
         else if (retval == 0)
             break;
-
-        if (Input.key_Up)
-            Pos.Y = Pos.Y + 1;
-        if (Input.key_Down)
-            Pos.Y = Pos.Y - 1;
-        if (Input.key_Left)
-            Pos.X = Pos.X - 1;
-        if (Input.key_Right)
-            Pos.X = Pos.X + 1;
-        if (Input.key_Space) 
+        //값 제대로 들어갔나 보기용 테스트해봐야해..
+        if (retval)
         {
-            Bomb = Pos;
-            printf ("Bomb! (%d, %d)\n", Bomb.X, Bomb.Y);
+            std::cout << Input.key_Down << " " << Input.key_Up << " " << Input.key_Left << " " << Input.key_Right << std::endl;
+            gameSceneData.setKeyInput(client_sock, Input);
         }
-
 
         // 받은 데이터 출력
         //buf[retval] = '\0';
@@ -108,6 +99,8 @@ DWORD WINAPI ProcessThread(LPVOID arg)
         {
             printf("Data Send Error : x position\n");
         }
+        
+        retval = 0;
     }
 
     return 0;
@@ -117,7 +110,10 @@ DWORD WINAPI ProcessThread(LPVOID arg)
 
 DWORD WINAPI GameThread(LPVOID arg)
 {
-    gameSceneData.update();
+    while (true)
+    {
+        gameSceneData.update();
+    }
     return 0;
 }
 
@@ -162,9 +158,9 @@ int main(int argc, char *argv[])
     SOCKADDR_IN clientaddr;
     int addrlen;
 
-    HANDLE PThread[3], GThread, LThread;
+    HANDLE PThread, GThread, LThread;
     //HANDLE PThread;
-
+    GThread = CreateThread(NULL, 0, GameThread, NULL, 0, NULL);
     while (1) {
         // accept()
         addrlen = sizeof(clientaddr);
@@ -180,10 +176,12 @@ int main(int argc, char *argv[])
         // 접속한 클라이언트 정보 출력
         printf("\n[TCP 서버] 클라이언트 접속: IP 주소=%s, 포트 번호=%d\n",
                 ip_addr, ntohs(clientaddr.sin_port));
+        //플레이어 연결됐으니 씬데이터에 플레이어 만들어주기
+        gameSceneData.setPlayer(client_sock);
 
-        PThread[0] = CreateThread(NULL, 0, ProcessThread, (LPVOID)client_sock, 0, NULL);
-        if (PThread[0] == NULL) { closesocket(client_sock); }
-        else { CloseHandle(PThread[0]); }
+        PThread= CreateThread(NULL, 0, ProcessThread, (LPVOID)client_sock, 0, NULL);
+        if (PThread == NULL) { closesocket(client_sock); }
+        else { CloseHandle(PThread); }
 
 
         printf("[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n",

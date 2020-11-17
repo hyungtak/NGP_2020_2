@@ -4,7 +4,7 @@
 #include <WS2tcpip.h>
 #include <stdlib.h>
 #include <stdio.h>
-
+#include <iostream>
 #define MAX_PLAYER 3
 #define MAP_SIZE 30
 
