@@ -23,22 +23,22 @@ void SceneData::update()
 	{
 		if (m_playerStatus[i].key.key_Down)
 		{
-			m_playerStatus[i].position.y -= 1;
+			m_playerStatus[i].position.Y -= 1;
 			m_playerStatus[i].key.key_Down = false;
 		}
 		if (m_playerStatus[i].key.key_UP)
 		{
-			m_playerStatus[i].position.y += 1;
+			m_playerStatus[i].position.Y += 1;
 			m_playerStatus[i].key.key_UP = false;
 		}
 		if (m_playerStatus[i].key.key_Left)
 		{
-			m_playerStatus[i].position.x -= 1;
+			m_playerStatus[i].position.X -= 1;
 			m_playerStatus[i].key.key_Left = false;
 		}
 		if (m_playerStatus[i].key.key_Right)
 		{
-			m_playerStatus[i].position.x += 1;
+			m_playerStatus[i].position.X += 1;
 			m_playerStatus[i].key.key_Right = false;
 		}
 	}

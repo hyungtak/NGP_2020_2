@@ -45,8 +45,9 @@ DWORD WINAPI ProcessThread(LPVOID arg)
     SOCKADDR_IN clientaddr;
 
     int retval;
-    float PlayerX = 0, PlayerY = 0;
-    float BombX, BombY;
+    Point Pos {0, 0};
+    KeyInput Input{ 0 };
+    short BombX, BombY;
     char buf[BUFSIZE + 1];
     int addrlen;
 
@@ -70,22 +71,22 @@ DWORD WINAPI ProcessThread(LPVOID arg)
         {
             switch (buf[i]) {
             case 72:
-                PlayerY = PlayerY + 1.0f;
+                Pos.Y = Pos.Y + 1;
                 break;
 
             case 80:
-                PlayerY = PlayerY - 1.0f;
+                Pos.Y = Pos.Y - 1;
                 break;
 
             case 75:
-                PlayerX = PlayerX - 1.0f;
+                Pos.X = Pos.X - 1;
                 break;
             case 77:
-                PlayerX = PlayerX + 1.0f;
+                Pos.X = Pos.X + 1;
                 break;
             case ' ':
-                BombX = PlayerX;
-                BombY = PlayerY;
+                BombX = Pos.X;
+                BombY = Pos.Y;
 
                 printf("Space bar! (%f, %f)\n", BombX, BombY);
                 break;
@@ -110,7 +111,7 @@ DWORD WINAPI ProcessThread(LPVOID arg)
                                                                              // 누가 움직였는지 클라이언트에서 알 수 있다.
 
         // 데이터 보내기 (send())
-        retval = send(client_sock, reinterpret_cast<char*>(&PlayerX), 4, 0);
+        retval = send(client_sock, reinterpret_cast<char*>(&Pos.X), 4, 0);
         if (retval == SOCKET_ERROR) {
             err_display("X1 send()");
 //            break;
@@ -118,7 +119,7 @@ DWORD WINAPI ProcessThread(LPVOID arg)
         if (4 != retval) {
             printf("Data Send Error : x position\n");
         }
-        retval = send(client_sock, reinterpret_cast<char*>(&PlayerY), 4, 0);
+        retval = send(client_sock, reinterpret_cast<char*>(&Pos.Y), 4, 0);
         if (retval == SOCKET_ERROR) {
             err_display("Y1 send()");
 //            break;
@@ -136,6 +137,7 @@ DWORD WINAPI ProcessThread(LPVOID arg)
 DWORD WINAPI GameThread(LPVOID arg)
 {
     gameSceneData.update();
+    return 0;
 }
 
 typedef struct PlayerState

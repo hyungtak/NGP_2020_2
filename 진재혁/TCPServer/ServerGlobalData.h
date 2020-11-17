@@ -11,7 +11,7 @@
 
 struct KeyInput //키 입력 on off
 {
-	bool key_UP;
+	bool key_Up;
 	bool key_Down;
 	bool key_Left;
 	bool key_Right;
@@ -20,8 +20,8 @@ struct KeyInput //키 입력 on off
 
 struct Point
 {
-	short x;
-	short y;
+	short X;
+	short Y;
 };
 
 enum Item
