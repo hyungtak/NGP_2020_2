@@ -1,40 +1,88 @@
-/*
-Copyright 2020 Lee Taek Hee (Korea Polytech University)
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the What The Hell License. Do it plz.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY.
-*/
+#pragma comment(lib, "ws2_32")
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <stdlib.h>
+#include <conio.h>
 
 #include "stdafx.h"
 #include <iostream>
 #include "Dependencies\glew.h"
 #include "Dependencies\freeglut.h"
 #include "GSEGame.h"
+#include "GSEGlobal.h"
+
+#define SERVERIP   "127.0.0.1"
+#define SERVERPORT 9000
+#define BUFSIZE    512
 
 GSEGame* g_game = NULL;
-GSEInputs g_inputs;
+KeyInput g_inputs;
+
+int SendToServer();
+int RecvFromServer();
 
 int g_prevTimeInMillisecond = 0;
 
 void RenderScene(int temp)
 {
-	int currentTime = glutGet(GLUT_ELAPSED_TIME);
-	int elapsedTime = currentTime-g_prevTimeInMillisecond;
-	g_prevTimeInMillisecond = currentTime;
-	float elapsedTimeInSec = (float)elapsedTime / 1000.0f;
+    int currentTime = glutGet(GLUT_ELAPSED_TIME);
+    int elapsedTime = currentTime - g_prevTimeInMillisecond;
+    g_prevTimeInMillisecond = currentTime;
+    float elapsedTimeInSec = (float)elapsedTime / 1000.0f;
 
-	GSEInputs tempInputs;
-	memcpy(&tempInputs, &g_inputs, sizeof(GSEInputs));
+    SendToServer();
+    RecvFromServer();
 
-	g_game->Update(elapsedTimeInSec, &tempInputs);
-	g_game->RendererScene();
+    g_game->RendererScene();
 
-	glutSwapBuffers();		//double buffering
+    glutSwapBuffers();		//double buffering
 
-	glutTimerFunc(16, RenderScene, 16);
+    glutTimerFunc(16, RenderScene, 16);
+}
+
+void SpecialKeyDownInput(int key, int x, int y)
+{
+    switch (key)
+    {
+    case GLUT_KEY_UP:
+        g_inputs.key_UP = true;
+        break;
+    case GLUT_KEY_DOWN:
+        g_inputs.key_Down = true;
+        break;
+    case GLUT_KEY_LEFT:
+        g_inputs.key_Left = true;
+        break;
+    case GLUT_KEY_RIGHT:
+        g_inputs.key_Right = true;
+        break;
+    case ' ':
+        g_inputs.key_Space = true;
+        break;
+    }
+
+}
+
+void SpecialKeyUpInput(int key, int x, int y)
+{
+    switch (key)
+    {
+    case GLUT_KEY_UP:
+        g_inputs.key_UP = false;
+        break;
+    case GLUT_KEY_DOWN:
+        g_inputs.key_Down = false;
+        break;
+    case GLUT_KEY_LEFT:
+        g_inputs.key_Left = false;
+        break;
+    case GLUT_KEY_RIGHT:
+        g_inputs.key_Right = false;
+        break;
+    case ' ':
+        g_inputs.key_Space = false;
+        break;
+    }
 }
 
 void Idle(void)
@@ -45,122 +93,163 @@ void MouseInput(int button, int state, int x, int y)
 {
 }
 
-void KeyDownInput(unsigned char key, int x, int y)
+// 소켓 함수 오류 출력 후 종료
+void err_quit(char* msg)
 {
-	switch (key)
-	{
-	case 'w' | 'W':
-		g_inputs.KEY_W = true;
-		break;
-	case 'a' | 'A':
-		g_inputs.KEY_A = true;
-		break;
-	case 's' | 'S':
-		g_inputs.KEY_S = true;
-		break;
-	case 'd' | 'D':
-		g_inputs.KEY_D = true;
-		break;
-	}
+    LPVOID lpMsgBuf;
+    FormatMessage(
+        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+        NULL, WSAGetLastError(),
+        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        (LPTSTR)&lpMsgBuf, 0, NULL);
+    MessageBox(NULL, (LPCTSTR)lpMsgBuf, msg, MB_ICONERROR);
+    LocalFree(lpMsgBuf);
+    exit(1);
 }
 
-void KeyUpInput(unsigned char key, int x, int y)
+// 소켓 함수 오류 출력
+void err_display(char* msg)
 {
-	switch (key)
-	{
-	case 'w' | 'W':
-		g_inputs.KEY_W = false;
-		break;
-	case 'a' | 'A':
-		g_inputs.KEY_A = false;
-		break;
-	case 's' | 'S':
-		g_inputs.KEY_S = false;
-		break;
-	case 'd' | 'D':
-		g_inputs.KEY_D = false;
-		break;
-	}
+    LPVOID lpMsgBuf;
+    FormatMessage(
+        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+        NULL, WSAGetLastError(),
+        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        (LPTSTR)&lpMsgBuf, 0, NULL);
+    printf("[%s] %s", msg, (char*)lpMsgBuf);
+    LocalFree(lpMsgBuf);
 }
 
-void SpecialKeyDownInput(int key, int x, int y)
+// 사용자 정의 데이터 수신 함수
+int recvn(SOCKET s, char* buf, int len, int flags)
 {
-	switch (key)
-	{
-	case GLUT_KEY_UP:
-		g_inputs.ARROW_UP = true;
-		break;
-	case GLUT_KEY_DOWN:
-		g_inputs.ARROW_DOWN = true;
-		break;
-	case GLUT_KEY_LEFT:
-		g_inputs.ARROW_LEFT = true;
-		break;
-	case GLUT_KEY_RIGHT:
-		g_inputs.ARROW_RIGHT = true;
-		break;
-	}
+    int received;
+    char* ptr = buf;
+    int left = len;
+
+    while (left > 0) {
+        received = recv(s, ptr, left, flags);
+        if (received == SOCKET_ERROR)
+            return SOCKET_ERROR;
+        else if (received == 0)
+            break;
+        left -= received;
+        ptr += received;
+    }
+
+    return (len - left);
 }
 
-void SpecialKeyUpInput(int key, int x, int y)
+int SendToServer()
 {
-	switch (key)
-	{
-	case GLUT_KEY_UP:
-		g_inputs.ARROW_UP = false;
-		break;
-	case GLUT_KEY_DOWN:
-		g_inputs.ARROW_DOWN = false;
-		break;
-	case GLUT_KEY_LEFT:
-		g_inputs.ARROW_LEFT = false;
-		break;
-	case GLUT_KEY_RIGHT:
-		g_inputs.ARROW_RIGHT = false;
-		break;
-	}
+    int retval;
+
+    float PlayerX;
+    float PlayerY;
+
+    // 윈속 초기화
+    WSADATA wsa;
+    if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
+        return 1;
+
+    // socket()
+    SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock == INVALID_SOCKET) err_quit("socket()");
+
+    // connect()
+    SOCKADDR_IN serveraddr;
+    ZeroMemory(&serveraddr, sizeof(serveraddr));
+    serveraddr.sin_family = AF_INET;
+    inet_pton(AF_INET, SERVERIP, &(serveraddr.sin_addr.s_addr));
+    serveraddr.sin_port = htons(SERVERPORT);
+    retval = connect(sock, (SOCKADDR*)&serveraddr, sizeof(serveraddr));
+    if (retval == SOCKET_ERROR) err_quit("connect()");
+
+    // 서버와 데이터 통신
+    while (1) {
+        // 데이터 보내기
+        retval = send(sock, (const char*)(&g_inputs), sizeof(KeyInput), 0);
+        if (retval == SOCKET_ERROR) {
+            err_display("send()");
+            break;
+        }
+        system("cls");
+    }
+
+    // closesocket()
+    closesocket(sock);
+
+    // 윈속 종료
+    WSACleanup();
 }
 
-int main(int argc, char **argv)
+int RecvFromServer()
 {
-	// Initialize GL things
-	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
-	glutInitWindowPosition(0, 0);
-	glutInitWindowSize(500, 500);
-	glutCreateWindow("Game Software Engineering KPU");
+    int retval;
 
-	glewInit();
-	if (glewIsSupported("GL_VERSION_3_0"))
-	{
-		std::cout << " GLEW Version is 3.0\n ";
-	}
-	else
-	{
-		std::cout << "GLEW 3.0 not supported\n ";
-	}
+    float PlayerX;
+    float PlayerY;
 
-	// Initialize Renderer
-	
-	g_game = new GSEGame();
-	memset(&g_inputs, 0, sizeof(GSEInputs));
+    // 윈속 초기화
+    WSADATA wsa;
+    if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
+        return 1;
 
-	glutDisplayFunc(Idle);
-	glutIdleFunc(Idle);
-	glutKeyboardFunc(KeyDownInput);
-	glutKeyboardUpFunc(KeyUpInput);
-	glutMouseFunc(MouseInput);
-	glutSpecialFunc(SpecialKeyDownInput);
-	glutSpecialUpFunc(SpecialKeyUpInput);
+    // socket()
+    SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock == INVALID_SOCKET) err_quit("socket()");
 
-	g_prevTimeInMillisecond = glutGet(GLUT_ELAPSED_TIME);
+    retval = recvn(sock, reinterpret_cast<char*>(&PlayerX), 4, 0);
+    if (retval == SOCKET_ERROR) {
+        err_display("X1 recv()");
+    }
+    retval = recvn(sock, reinterpret_cast<char*>(&PlayerY), 4, 0);
+    if (retval == SOCKET_ERROR) {
+        err_display("Y1 recv()");
+    }
 
-	glutTimerFunc(16, RenderScene, 16);
+    // closesocket()
+    closesocket(sock);
 
-	glutMainLoop();
+    // 윈속 종료
+    WSACleanup();
+}
 
-	delete g_game;
+int main(int argc, char* argv[])
+{
+    // Initialize GL things
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
+    glutInitWindowPosition(0, 0);
+    glutInitWindowSize(GSE_WINDOW_WIDTH, GSE_WINDOW_HEIGHT);
+    glutCreateWindow("Network Game Programing KPU");
+
+    glewInit();
+    if (glewIsSupported("GL_VERSION_3_0"))
+    {
+        std::cout << " GLEW Version is 3.0\n ";
+    }
+    else
+    {
+        std::cout << "GLEW 3.0 not supported\n ";
+    }
+
+    g_game = new GSEGame();
+    memset(&g_inputs, 0, sizeof(KeyInput));
+
+    glutDisplayFunc(Idle);
+    glutIdleFunc(Idle);
+    glutMouseFunc(MouseInput);
+    glutSpecialFunc(SpecialKeyDownInput);
+    glutSpecialUpFunc(SpecialKeyUpInput);
+
+    g_prevTimeInMillisecond = glutGet(GLUT_ELAPSED_TIME);
+
+    glutTimerFunc(16, RenderScene, 16);
+
+    glutMainLoop();
+
+    delete g_game;
 
     return 0;
 }
-
