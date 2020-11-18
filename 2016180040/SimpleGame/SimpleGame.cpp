@@ -18,8 +18,13 @@
 GSEGame* g_game = NULL;
 KeyInput g_inputs;
 
-int SendToServer();
-int RecvFromServer();
+void SendToServer();
+void RecvFromServer();
+
+WSADATA wsa;
+SOCKET sock;
+SOCKADDR_IN serveraddr;
+int retval;
 
 int g_prevTimeInMillisecond = 0;
 
@@ -40,6 +45,26 @@ void RenderScene(int temp)
     glutTimerFunc(16, RenderScene, 16);
 }
 
+void KeyDownInput(unsigned char key, int x, int y)
+{
+    switch (key)
+    {
+    case ' ':
+        g_inputs.key_Space = true;
+        break;
+    }
+}
+
+void KeyUpInput(unsigned char key, int x, int y)
+{
+    switch (key)
+    {
+    case ' ':
+        g_inputs.key_Space = false;
+        break;
+    }
+}
+
 void SpecialKeyDownInput(int key, int x, int y)
 {
     switch (key)
@@ -55,9 +80,6 @@ void SpecialKeyDownInput(int key, int x, int y)
         break;
     case GLUT_KEY_RIGHT:
         g_inputs.key_Right = true;
-        break;
-    case ' ':
-        g_inputs.key_Space = true;
         break;
     }
 
@@ -78,9 +100,6 @@ void SpecialKeyUpInput(int key, int x, int y)
         break;
     case GLUT_KEY_RIGHT:
         g_inputs.key_Right = false;
-        break;
-    case ' ':
-        g_inputs.key_Space = false;
         break;
     }
 }
@@ -140,79 +159,47 @@ int recvn(SOCKET s, char* buf, int len, int flags)
     return (len - left);
 }
 
-int SendToServer()
+void SendToServer()
 {
-    int retval;
+    // 서버와 데이터 통신
+    // 데이터 보내기
+    retval = send(sock, (const char*)(&g_inputs), sizeof(KeyInput), 0);
+    if (retval == SOCKET_ERROR) {
+        err_display("send()");
+    }
+    system("cls");
+}
 
-    float PlayerX;
-    float PlayerY;
+void RecvFromServer()
+{
+    MapData mapData[MAP_SIZE][MAP_SIZE];
 
-    // 윈속 초기화
-    WSADATA wsa;
+   do{
+        retval = recvn(sock, reinterpret_cast<char*>(&mapData), sizeof(MapData), 0);
+        if (retval == SOCKET_ERROR) {
+            err_display("MapData recv()");
+            break;
+        }
+   } while (retval != 0);
+
+   g_game->SetMapData(mapData);
+}
+
+int connectSocket()
+{
     if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
         return 1;
 
-    // socket()
-    SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
+    sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock == INVALID_SOCKET) err_quit("socket()");
 
     // connect()
-    SOCKADDR_IN serveraddr;
     ZeroMemory(&serveraddr, sizeof(serveraddr));
     serveraddr.sin_family = AF_INET;
     inet_pton(AF_INET, SERVERIP, &(serveraddr.sin_addr.s_addr));
     serveraddr.sin_port = htons(SERVERPORT);
     retval = connect(sock, (SOCKADDR*)&serveraddr, sizeof(serveraddr));
     if (retval == SOCKET_ERROR) err_quit("connect()");
-
-    // 서버와 데이터 통신
-    while (1) {
-        // 데이터 보내기
-        retval = send(sock, (const char*)(&g_inputs), sizeof(KeyInput), 0);
-        if (retval == SOCKET_ERROR) {
-            err_display("send()");
-            break;
-        }
-        system("cls");
-    }
-
-    // closesocket()
-    closesocket(sock);
-
-    // 윈속 종료
-    WSACleanup();
-}
-
-int RecvFromServer()
-{
-    int retval;
-
-    float PlayerX;
-    float PlayerY;
-
-    // 윈속 초기화
-    WSADATA wsa;
-    if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
-        return 1;
-
-    // socket()
-    SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (sock == INVALID_SOCKET) err_quit("socket()");
-
-    retval = recvn(sock, reinterpret_cast<char*>(&PlayerX), 4, 0);
-    if (retval == SOCKET_ERROR) {
-        err_display("X1 recv()");
-    }
-    retval = recvn(sock, reinterpret_cast<char*>(&PlayerY), 4, 0);
-    if (retval == SOCKET_ERROR) {
-        err_display("Y1 recv()");
-    }
-
-    // closesocket()
-    closesocket(sock);
-
-    // 윈속 종료
-    WSACleanup();
 }
 
 int main(int argc, char* argv[])
@@ -223,6 +210,7 @@ int main(int argc, char* argv[])
     glutInitWindowPosition(0, 0);
     glutInitWindowSize(GSE_WINDOW_WIDTH, GSE_WINDOW_HEIGHT);
     glutCreateWindow("Network Game Programing KPU");
+    connectSocket();
 
     glewInit();
     if (glewIsSupported("GL_VERSION_3_0"))
@@ -240,6 +228,8 @@ int main(int argc, char* argv[])
     glutDisplayFunc(Idle);
     glutIdleFunc(Idle);
     glutMouseFunc(MouseInput);
+    glutKeyboardFunc(KeyDownInput);
+    glutKeyboardUpFunc(KeyUpInput);
     glutSpecialFunc(SpecialKeyDownInput);
     glutSpecialUpFunc(SpecialKeyUpInput);
 
@@ -250,6 +240,12 @@ int main(int argc, char* argv[])
     glutMainLoop();
 
     delete g_game;
+
+    // closesocket()
+    closesocket(sock);
+
+    // 윈속 종료
+    WSACleanup();
 
     return 0;
 }

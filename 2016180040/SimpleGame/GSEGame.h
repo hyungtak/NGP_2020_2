@@ -12,6 +12,8 @@ public:
 
 	void Update(float elapsedTimeInSec, KeyInput* inputs);
 	void RendererScene();
+
+	void SetMapData(MapData(*map_data)[MAP_SIZE]);
 private:
 	MapData m_pMapdata[MAP_SIZE][MAP_SIZE];
 	Renderer* m_renderer = NULL;
