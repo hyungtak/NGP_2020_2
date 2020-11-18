@@ -163,7 +163,7 @@ int main(int argc, char *argv[])
     HANDLE PThread, GThread, LThread;
 
     //
-    Event = CreateEvent(NULL, FALSE, FALSE, NULL);
+    Event = CreateEvent(NULL, FALSE, TRUE, NULL);
     if (Event == NULL) return 1;
 
     //HANDLE PThread;
