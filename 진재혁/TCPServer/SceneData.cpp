@@ -15,9 +15,10 @@ SceneData::SceneData()
 
 SceneData::~SceneData()
 {
+
 }
 
-void SceneData::update()
+void SceneData::update()	
 {
 	for (int i = 0; i < MAX_PLAYER; i++) //변경해야함
 	{
@@ -42,6 +43,15 @@ void SceneData::update()
 			m_playerStatus[i].key.key_Right = false;
 		}
 	}
+
+	//// 플레이어 좌표 출력 test용
+	//for (int i = 0; i < MAX_PLAYER; i++)
+	//{
+	//	printf("m_playerStatus[%d].position = (%d, %d)\n", 
+	//		i, m_playerStatus[i].position.X, m_playerStatus[i].position.Y);
+	//}
+
+	//system("cls");
 }
 
 void SceneData::setKeyInput(SOCKET socket, KeyInput key)
@@ -55,7 +65,6 @@ void SceneData::setKeyInput(SOCKET socket, KeyInput key)
 		}
 	}
 }
-
 
 void SceneData::setPlayer(SOCKET socket)
 {

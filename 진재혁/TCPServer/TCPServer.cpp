@@ -3,8 +3,10 @@
 
 #define SERVERPORT 9000
 #define BUFSIZE    512
+
 //SceneData 만들기!
 SceneData gameSceneData;
+HANDLE Event;
 
 // 소켓 함수 오류 출력 후 종료
 void err_quit(char *msg)
@@ -38,6 +40,7 @@ DWORD WINAPI LobbyThread(LPVOID arg)
     return 0;
 }
 
+int num1 = 0;
 
 DWORD WINAPI ProcessThread(LPVOID arg)
 {
@@ -48,8 +51,8 @@ DWORD WINAPI ProcessThread(LPVOID arg)
     Point Pos{ 0 };
     Point Bomb = Pos;
     KeyInput Input{ 0 };
-    char buf[BUFSIZE + 1];
     int addrlen;
+    int num2 = num1++;
 
     // 클라이언트 정보 얻기
     addrlen = sizeof(clientaddr);
@@ -57,6 +60,10 @@ DWORD WINAPI ProcessThread(LPVOID arg)
 
     // 클라이언트와 데이터 통신
     while (1) {
+
+        retval = WaitForSingleObject(Event, INFINITE);
+        
+
         // 데이터 받기 (recv())
         retval = recv(client_sock, (char*)&Input, sizeof(KeyInput), 0);    // char : 1byte
         if (retval == SOCKET_ERROR) {
@@ -65,25 +72,21 @@ DWORD WINAPI ProcessThread(LPVOID arg)
         }
         else if (retval == 0)
             break;
+
+        std::cout << Input.key_Down << " " << Input.key_Up << " " << Input.key_Left << " " << Input.key_Right << std::endl;
+        
         //값 제대로 들어갔나 보기용 테스트해봐야해..
-        if (retval)
-        {
-            std::cout << Input.key_Down << " " << Input.key_Up << " " << Input.key_Left << " " << Input.key_Right << std::endl;
-            gameSceneData.setKeyInput(client_sock, Input);
-        }
 
-        // 받은 데이터 출력
-        //buf[retval] = '\0';
-        //printf("[TCP/%s:%d] %s\n", inet_ntoa(clientaddr.sin_addr),
-        //    ntohs(clientaddr.sin_port), buf);
+        // 구현해야 함
+        //WaitForSingleObject(Event, INFINITE);
+        //gameSceneData.setKeyInput(player_sock, input);
 
+        //std::cout << Input.key_Down << " " << Input.key_Up << " " << Input.key_Left << " " << Input.key_Right << std::endl;
+        printf("num2: %d \n", num2);
 
-        //// 데이터 보내기
-        //retval = send(client_sock, buf, retval, 0);
-        //if (retval == SOCKET_ERROR) {
-        //    err_display("send()");
-        //    break;
-        //}
+        gameSceneData.setKeyInput(client_sock, Input);
+    
+
 
         //retval = send(client_sock, reinterpret_cast<char *>(&ID), 4, 0);   // 추후 ID를 같이 보내줘야지 여러 마리의 NPC와 다른 플레이어들이 있을때
                                                                              // 누가 움직였는지 클라이언트에서 알 수 있다.
@@ -100,8 +103,11 @@ DWORD WINAPI ProcessThread(LPVOID arg)
             printf("Data Send Error : x position\n");
         }
         
-        retval = 0;
+        
+        SetEvent(Event);
     }
+
+    
 
     return 0;
 
@@ -117,10 +123,6 @@ DWORD WINAPI GameThread(LPVOID arg)
     return 0;
 }
 
-typedef struct PlayerState
-{
-    float posX, posY;
-};
 
 
 int main(int argc, char *argv[])
@@ -159,6 +161,11 @@ int main(int argc, char *argv[])
     int addrlen;
 
     HANDLE PThread, GThread, LThread;
+
+    //
+    Event = CreateEvent(NULL, FALSE, FALSE, NULL);
+    if (Event == NULL) return 1;
+
     //HANDLE PThread;
     GThread = CreateThread(NULL, 0, GameThread, NULL, 0, NULL);
     while (1) {
