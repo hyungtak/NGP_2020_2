@@ -15,6 +15,14 @@ enum Item
 	POTION, //폭탄 길이 증가
 };
 
+enum PlayerColor
+{
+	PLAYEREMPTY,
+	RED,
+	GREEN,
+	BLUE,
+};
+
 struct Point
 {
 	short x;
@@ -26,6 +34,7 @@ struct MapData
 	Item 	item; // 아이템이 있는지
 	bool	isRock; //막혀있는 곳
 	bool 	isBomb; //폭탄이있는지
+	PlayerColor playerColor;
 };
 
 struct KeyInput //키 입력 on off
