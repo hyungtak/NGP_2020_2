@@ -1,3 +1,0 @@
-﻿  TCPServer.cpp
-C:\Users\원휘재\Desktop\git\NGP_2020_2\진재혁\TCPServer\TCPServer.cpp(163,30): warning C4101: 'LThread' :참조되지 않은 지역 변수입니다.
-  TCPServer.vcxproj -> C:\Users\원휘재\Desktop\git\NGP_2020_2\진재혁\TCPServer\Debug\TCPServer.exe
