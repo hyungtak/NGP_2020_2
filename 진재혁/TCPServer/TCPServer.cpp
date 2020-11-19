@@ -40,7 +40,6 @@ DWORD WINAPI LobbyThread(LPVOID arg)
     return 0;
 }
 
-int num1 = 0;
 
 DWORD WINAPI ProcessThread(LPVOID arg)
 {
@@ -52,7 +51,6 @@ DWORD WINAPI ProcessThread(LPVOID arg)
     Point Bomb = Pos;
     KeyInput Input{ 0 };
     int addrlen;
-    int num2 = num1++;
 
     // 클라이언트 정보 얻기
     addrlen = sizeof(clientaddr);
@@ -73,16 +71,12 @@ DWORD WINAPI ProcessThread(LPVOID arg)
         else if (retval == 0)
             break;
 
-        std::cout << Input.key_Down << " " << Input.key_Up << " " << Input.key_Left << " " << Input.key_Right << std::endl;
+        //std::cout << Input.key_Down << " " << Input.key_Up << " " << Input.key_Left << " " << Input.key_Right << std::endl;
         
         //값 제대로 들어갔나 보기용 테스트해봐야해..
 
-        // 구현해야 함
-        //WaitForSingleObject(Event, INFINITE);
-        //gameSceneData.setKeyInput(player_sock, input);
-
+        
         //std::cout << Input.key_Down << " " << Input.key_Up << " " << Input.key_Left << " " << Input.key_Right << std::endl;
-        printf("num2: %d \n", num2);
 
         gameSceneData.setKeyInput(client_sock, Input);
     
@@ -92,6 +86,11 @@ DWORD WINAPI ProcessThread(LPVOID arg)
                                                                              // 누가 움직였는지 클라이언트에서 알 수 있다.
 
         // 데이터 보내기 (send())
+        PlayerStatus ps;
+        gameSceneData.getPlayer(client_sock, &ps);
+        Pos.X = ps.position.X;
+        Pos.Y = ps.position.Y;
+        std::cout << Pos.X << " " << Pos.Y << std::endl;
         retval = send(client_sock, (char*)&Pos, sizeof(Point), 0);
         if (retval == SOCKET_ERROR) 
         {

@@ -44,14 +44,13 @@ void SceneData::update()
 		}
 	}
 
-	//// 플레이어 좌표 출력 test용
+	// 플레이어 좌표 출력 test용
 	//for (int i = 0; i < MAX_PLAYER; i++)
 	//{
 	//	printf("m_playerStatus[%d].position = (%d, %d)\n", 
 	//		i, m_playerStatus[i].position.X, m_playerStatus[i].position.Y);
 	//}
 
-	//system("cls");
 }
 
 void SceneData::setKeyInput(SOCKET socket, KeyInput key)
@@ -82,9 +81,8 @@ void SceneData::getPlayer(SOCKET socket, PlayerStatus* playerStatus)
 	{
 		if (m_playerStatus[i].playerSocket == socket)
 		{
-			playerStatus = &m_playerStatus[i];
+			*playerStatus = m_playerStatus[i];
 			break;
 		}
 	}
 }
-
