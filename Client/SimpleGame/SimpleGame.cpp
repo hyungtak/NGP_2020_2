@@ -18,9 +18,6 @@
 GSEGame* g_game = NULL;
 KeyInput g_inputs;
 
-void SendToServer();
-void RecvFromServer();
-
 WSADATA wsa;
 SOCKET sock;
 SOCKADDR_IN serveraddr;
@@ -35,8 +32,22 @@ void RenderScene(int temp)
     g_prevTimeInMillisecond = currentTime;
     float elapsedTimeInSec = (float)elapsedTime / 1000.0f;
 
-    SendToServer();
-    RecvFromServer();
+    //SendToServer()
+    retval = send(sock, (const char*)(&g_inputs), sizeof(KeyInput), 0);
+    if (retval == SOCKET_ERROR) {
+        err_display("send()");
+    }
+
+    //RecvFromServer()
+    MapData mapData[MAP_SIZE][MAP_SIZE];
+    do {
+        retval = recvn(sock, reinterpret_cast<char*>(&mapData), sizeof(MapData), 0);
+        if (retval == SOCKET_ERROR) {
+            err_display("MapData recv()");
+            break;
+        }
+    } while (retval != 0);
+    g_game->SetMapData(mapData);
 
     g_game->RendererScene();
 
@@ -157,32 +168,6 @@ int recvn(SOCKET s, char* buf, int len, int flags)
     }
 
     return (len - left);
-}
-
-void SendToServer()
-{
-    // 서버와 데이터 통신
-    // 데이터 보내기
-    retval = send(sock, (const char*)(&g_inputs), sizeof(KeyInput), 0);
-    if (retval == SOCKET_ERROR) {
-        err_display("send()");
-    }
-    system("cls");
-}
-
-void RecvFromServer()
-{
-    MapData mapData[MAP_SIZE][MAP_SIZE];
-
-   do{
-        retval = recvn(sock, reinterpret_cast<char*>(&mapData), sizeof(MapData), 0);
-        if (retval == SOCKET_ERROR) {
-            err_display("MapData recv()");
-            break;
-        }
-   } while (retval != 0);
-
-   g_game->SetMapData(mapData);
 }
 
 int connectSocket()
