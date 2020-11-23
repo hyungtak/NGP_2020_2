@@ -25,6 +25,9 @@ int retval;
 
 int g_prevTimeInMillisecond = 0;
 
+int recvn(SOCKET s, char* buf, int len, int flags);
+void err_display(char* msg);
+
 void RenderScene(int temp)
 {
     int currentTime = glutGet(GLUT_ELAPSED_TIME);
@@ -33,27 +36,25 @@ void RenderScene(int temp)
     float elapsedTimeInSec = (float)elapsedTime / 1000.0f;
 
     //SendToServer()
-    retval = send(sock, (const char*)(&g_inputs), sizeof(KeyInput), 0);
+    retval = send(sock, (const char*)(&g_inputs), sizeof(g_inputs), 0);
     if (retval == SOCKET_ERROR) {
         err_display("send()");
     }
 
     //RecvFromServer()
     MapData mapData[MAP_SIZE][MAP_SIZE];
-    do {
         retval = recvn(sock, reinterpret_cast<char*>(&mapData), sizeof(MapData), 0);
         if (retval == SOCKET_ERROR) {
             err_display("MapData recv()");
-            break;
         }
-    } while (retval != 0);
+
     g_game->SetMapData(mapData);
 
     g_game->RendererScene();
 
     glutSwapBuffers();		//double buffering
 
-    glutTimerFunc(16, RenderScene, 16);
+    glutTimerFunc(30, RenderScene, 30);
 }
 
 void KeyDownInput(unsigned char key, int x, int y)
@@ -220,7 +221,7 @@ int main(int argc, char* argv[])
 
     g_prevTimeInMillisecond = glutGet(GLUT_ELAPSED_TIME);
 
-    glutTimerFunc(16, RenderScene, 16);
+    glutTimerFunc(30, RenderScene, 30);
 
     glutMainLoop();
 

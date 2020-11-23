@@ -28,9 +28,6 @@ void GSEGame::RendererScene()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
 
-	// Renderer Test
-	//m_renderer->DrawSolidRect(0, 0, 0, 4, 1, 0, 1, 1);
-
 	//Draw all objects
 	for (int i = 0; i < MAP_SIZE; i++)
 	{
@@ -38,24 +35,24 @@ void GSEGame::RendererScene()
 		{
 			if (m_pMapdata[i][j].isBomb == true)		//폭탄이 있을 경우
 			{
-				m_renderer->DrawSolidRect(i * 4, i * 4, 0, 4, 0.4f, 0.4f, 0.4f,1.0f);		//어두운 회색
+				m_renderer->DrawSolidRect(i * 20, j * 20, 0, 20, 0.4f, 0.4f, 0.4f,1.0f);		//어두운 회색
 			}
 			if (m_pMapdata[i][j].isRock == true)		//벽이 있을 경우
 			{
-				m_renderer->DrawSolidRect(i * 4, i * 4, 0, 4, 0.8f, 0.8f, 0.8f, 1.0f);		//밝은 회색
+				m_renderer->DrawSolidRect(i * 20, j * 20, 0, 20, 0.8f, 0.8f, 0.8f, 1.0f);		//밝은 회색
 			}
 			if (m_pMapdata[i][j].item != Item::EMPTY)	//아이템이 있을 경우
 			{
 				switch (m_pMapdata[i][j].item)
 				{
 				case Item::BALLON:
-					m_renderer->DrawSolidRect(i * 4, i * 4, 0, 4, 0.0f, 1.0f, 1.0f, 1.0f);	//하늘색
+					m_renderer->DrawSolidRect(i * 20, j * 20, 0, 20, 0.0f, 1.0f, 1.0f, 1.0f);	//하늘색
 					break;
 				case Item::POTION:
-					m_renderer->DrawSolidRect(i * 4, i * 4, 0, 4, 1.0f, 0.0f, 1.0f, 1.0f);	//자주색
+					m_renderer->DrawSolidRect(i * 20, j * 20, 0, 20, 1.0f, 0.0f, 1.0f, 1.0f);	//자주색
 					break;
 				case Item::SHOES:
-					m_renderer->DrawSolidRect(i * 4, i * 4, 0, 4, 1.0f, 0.5f, 0.0f, 1.0f);	//주황색
+					m_renderer->DrawSolidRect(i * 20, j * 20, 0, 20, 1.0f, 0.5f, 0.0f, 1.0f);	//주황색
 					break;
 				}
 			}
@@ -64,13 +61,13 @@ void GSEGame::RendererScene()
 				switch (m_pMapdata[i][j].playerColor)
 				{
 				case PlayerColor::RED:
-					m_renderer->DrawSolidRect(i * 4, i * 4, 0, 4, 1.0f, 0.0f, 0.0f, 1.0f);	//빨강
+					m_renderer->DrawSolidRect(i * 20, j * 20, 0, 20, 1.0f, 0.0f, 0.0f, 1.0f);	//빨강
 					break;
 				case PlayerColor::GREEN:
-					m_renderer->DrawSolidRect(i * 4, i * 4, 0, 4, 0.0f, 1.0f, 0.0f, 1.0f);	//초록
+					m_renderer->DrawSolidRect(i * 20, j * 20, 0, 20, 0.0f, 1.0f, 0.0f, 1.0f);	//초록
 					break;
 				case PlayerColor::BLUE:
-					m_renderer->DrawSolidRect(i * 4, i * 4, 0, 4, 0.0f, 0.0f, 1.0f, 1.0f);	//파랑
+					m_renderer->DrawSolidRect(i * 20, j * 20, 0, 20, 0.0f, 0.0f, 1.0f, 1.0f);	//파랑
 					break;
 				}
 			}
