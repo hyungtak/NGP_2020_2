@@ -40,7 +40,6 @@ DWORD WINAPI LobbyThread(LPVOID arg)
     return 0;
 }
 
-
 DWORD WINAPI ProcessThread(LPVOID arg)
 {
     SOCKET client_sock = (SOCKET)arg;
@@ -99,16 +98,12 @@ DWORD WINAPI ProcessThread(LPVOID arg)
             printf("Data Send Error : x position\n");
         }
         
-        
         SetEvent(Event);
     }
-
-    
 
     return 0;
 
 }
-
 
 DWORD WINAPI GameThread(LPVOID arg)
 {
@@ -119,15 +114,11 @@ DWORD WINAPI GameThread(LPVOID arg)
     return 0;
 }
 
-
-
 int main(int argc, char *argv[])
 {
     int retval;
     
     //LobbyThread = CreateThread(NULL, 0, LobbyThread, (LPVOID)client_sock, 0, NULL)
-
-
 
     // 윈속 초기화
     WSADATA wsa;

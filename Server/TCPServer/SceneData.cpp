@@ -25,7 +25,7 @@ SceneData::~SceneData()
 
 void SceneData::update()	
 {
-	for (int i = 0; i < MAX_PLAYER; i++) //변경해야함
+	for (int i = 0; i < m_nPlayer; i++) //변경해야함
 	{
 		m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].playerColor = PlayerColor::PLAYEREMPTY;
 
