@@ -20,8 +20,8 @@ struct KeyInput //키 입력 on off
 
 struct Point
 {
-	short X;
-	short Y;
+	int X;
+	int Y;
 };
 
 enum Item
@@ -32,6 +32,14 @@ enum Item
 	POTION, //폭탄 길이 증가
 };
 
+enum PlayerColor
+{
+	RED,
+	GREEN,
+	BLUE,
+	PLAYEREMPTY,
+};
+
 struct PlayerStatus  //플레이어의 소켓, 물줄기, 이동속도, 위치, 상태를 저장
 {
 	SOCKET		playerSocket;
@@ -40,6 +48,7 @@ struct PlayerStatus  //플레이어의 소켓, 물줄기, 이동속도, 위치, 상태를 저장
 	char 		power; // 폭탄 길이
 	Point 		position; // 플레이어 위치
 	bool		isAlive; // 생존 여부
+	PlayerColor playerColor;
 };
 
 struct MapData
@@ -47,5 +56,5 @@ struct MapData
 	Item 	item; // 아이템이 있는지
 	bool	isRock; //막혀있는 곳
 	bool 	isBomb; //폭탄이있는지
+	PlayerColor playerColor;
 };
-

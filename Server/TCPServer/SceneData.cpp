@@ -7,8 +7,13 @@ SceneData::SceneData()
 		for (int j = 0; j < MAP_SIZE; j++)
 		{
 			m_mapData[i][j].isBomb = false;
-			m_mapData[i][j].isRock = false;
-			m_mapData[i][j].item = EMPTY;
+			/*if (j % 2 == 0 && i % 2 == 0)
+				m_mapData[i][j].isRock = true;
+			else*/
+				m_mapData[i][j].isRock = false;
+
+			m_mapData[i][j].item = Item::EMPTY;
+			m_mapData[i][j].playerColor = PlayerColor::PLAYEREMPTY;
 		}
 	}
 }
@@ -22,6 +27,8 @@ void SceneData::update()
 {
 	for (int i = 0; i < MAX_PLAYER; i++) //변경해야함
 	{
+		m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].playerColor = PlayerColor::PLAYEREMPTY;
+
 		if (m_playerStatus[i].key.key_Down)
 		{
 			m_playerStatus[i].position.Y -= 1;
@@ -42,6 +49,9 @@ void SceneData::update()
 			m_playerStatus[i].position.X += 1;
 			m_playerStatus[i].key.key_Right = false;
 		}
+		
+		m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].playerColor = PlayerColor(i);
+		
 	}
 
 	// 플레이어 좌표 출력 test용
@@ -72,6 +82,7 @@ void SceneData::setPlayer(SOCKET socket)
 	m_playerStatus[m_nPlayer].position = { m_nPlayer * 10, m_nPlayer * 10 };
 	m_playerStatus[m_nPlayer].power = 0;
 	m_playerStatus[m_nPlayer].speed = 0;
+	m_playerStatus[m_nPlayer].playerColor = PlayerColor(m_nPlayer);
 	++m_nPlayer;
 }
 
