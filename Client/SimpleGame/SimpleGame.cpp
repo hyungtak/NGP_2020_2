@@ -167,6 +167,8 @@ void SendToServer()
     if (retval == SOCKET_ERROR) {
         err_display("send()");
     }
+    else
+        std::cout << send << std::endl;
     system("cls");
 }
 

@@ -70,18 +70,9 @@ DWORD WINAPI ProcessThread(LPVOID arg)
         }
         else if (retval == 0)
             break;
-
-        //std::cout << Input.key_Down << " " << Input.key_Up << " " << Input.key_Left << " " << Input.key_Right << std::endl;
-        
-        //값 제대로 들어갔나 보기용 테스트해봐야해..
-
-        
-        //std::cout << Input.key_Down << " " << Input.key_Up << " " << Input.key_Left << " " << Input.key_Right << std::endl;
-
+        std::cout << Input.key_Down << " " << Input.key_Left << " " << Input.key_Right << std::endl;
         gameSceneData.setKeyInput(client_sock, Input);
     
-
-
         //retval = send(client_sock, reinterpret_cast<char *>(&ID), 4, 0);   // 추후 ID를 같이 보내줘야지 여러 마리의 NPC와 다른 플레이어들이 있을때
                                                                              // 누가 움직였는지 클라이언트에서 알 수 있다.
 
@@ -90,8 +81,13 @@ DWORD WINAPI ProcessThread(LPVOID arg)
         gameSceneData.getPlayer(client_sock, &ps);
         Pos.X = ps.position.X;
         Pos.Y = ps.position.Y;
-        std::cout << Pos.X << " " << Pos.Y << std::endl;
-        retval = send(client_sock, (char*)&Pos, sizeof(Point), 0);
+        MapData md[MAP_SIZE][MAP_SIZE];
+
+        for (int i = 0; i < MAP_SIZE; i++)
+            for (int j = 0; j < MAP_SIZE; j++)
+               md[i][j] = gameSceneData.getMapData(i, j);
+        std::cout << md[0][0].isBomb << std::endl;
+        retval = send(client_sock, (char*)&md, sizeof(md), 0);
         if (retval == SOCKET_ERROR) 
         {
             err_display("XY send()");
