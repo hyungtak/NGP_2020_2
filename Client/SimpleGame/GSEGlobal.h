@@ -17,10 +17,10 @@ enum Item
 
 enum PlayerColor
 {
-	PLAYEREMPTY,
 	RED,
 	GREEN,
 	BLUE,
+	PLAYEREMPTY,
 };
 
 struct MapData
