@@ -80,15 +80,13 @@ DWORD WINAPI ProcessThread(LPVOID arg)
         gameSceneData.getPlayer(client_sock, &ps);
         Pos.X = ps.position.X;
         Pos.Y = ps.position.Y;
-        MapData md[MAP_SIZE][MAP_SIZE];
+MapData md[MAP_SIZE][MAP_SIZE];
 
         for (int i = 0; i < MAP_SIZE; i++)
             for (int j = 0; j < MAP_SIZE; j++)
                md[i][j] = gameSceneData.getMapData(i, j);
-       
         std::cout << md[0][0].isBomb << std::endl;
-        retval = send(client_sock, (char*)&md, sizeof(md), 0);
-        if (retval == SOCKET_ERROR) 
+        retval = send(client_sock, (char*)&md, sizeof(md), 0);        if (retval == SOCKET_ERROR) 
         {
             err_display("XY send()");
             break;

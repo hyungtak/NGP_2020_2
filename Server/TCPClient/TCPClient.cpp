@@ -7,7 +7,7 @@
 
 using namespace std;
 
-#define SERVERIP   "192.168.43.189"
+#define SERVERIP   "127.0.0.1"
 #define SERVERPORT 9000
 #define BUFSIZE    512
 
