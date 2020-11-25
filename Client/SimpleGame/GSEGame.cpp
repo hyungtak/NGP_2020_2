@@ -61,13 +61,13 @@ void GSEGame::RendererScene()
 				switch (m_pMapdata[i][j].playerColor)
 				{
 				case PlayerColor::RED:
-					m_renderer->DrawSolidRect(i * 20, j * 20, 0, 20, 1.0f, 0.0f, 0.0f, 1.0f);	//»¡°­
+					m_renderer->DrawSolidRect(i * 20, j * 20, 0, 16, 1.0f, 0.0f, 0.0f, 1.0f);	//»¡°­
 					break;
 				case PlayerColor::GREEN:
-					m_renderer->DrawSolidRect(i * 20, j * 20, 0, 20, 0.0f, 1.0f, 0.0f, 1.0f);	//ÃÊ·Ï
+					m_renderer->DrawSolidRect(i * 20, j * 20, 0, 16, 0.0f, 1.0f, 0.0f, 1.0f);	//ÃÊ·Ï
 					break;
 				case PlayerColor::BLUE:
-					m_renderer->DrawSolidRect(i * 20, j * 20, 0, 20, 0.0f, 0.0f, 1.0f, 1.0f);	//ÆÄ¶û
+					m_renderer->DrawSolidRect(i * 20, j * 20, 0, 16, 0.0f, 0.0f, 1.0f, 1.0f);	//ÆÄ¶û
 					break;
 				}
 			}

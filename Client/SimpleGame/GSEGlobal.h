@@ -4,8 +4,8 @@
 
 #define GSE_GRAVITY 9.8f
 
-#define GSE_WINDOW_WIDTH 800
-#define GSE_WINDOW_HEIGHT 600
+#define GSE_WINDOW_WIDTH 700
+#define GSE_WINDOW_HEIGHT 700
 
 enum Item
 {

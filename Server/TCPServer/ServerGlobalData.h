@@ -7,7 +7,7 @@
 #include <iostream>
 #define MAX_PLAYER 3
 #define MAP_SIZE 30
-
+#define BOMB_EXPLOSION_COUNT 3000000
 
 struct KeyInput //키 입력 on off
 {
@@ -22,6 +22,12 @@ struct Point
 {
 	int X;
 	int Y;
+};
+
+struct BombData		//폭탄 타이머 및 폭탄 위치값 저장용
+{
+	Point bombPoint;
+	int bombCount;
 };
 
 enum Item

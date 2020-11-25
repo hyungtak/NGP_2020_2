@@ -33,7 +33,9 @@ void RenderScene(int temp)
     int currentTime = glutGet(GLUT_ELAPSED_TIME);
     int elapsedTime = currentTime - g_prevTimeInMillisecond;
     g_prevTimeInMillisecond = currentTime;
-    float elapsedTimeInSec = (float)elapsedTime / 1000.0f;
+    float elapsedTimeInSec = (float)elapsedTime; // / 1000.0f;
+
+    std::cout << elapsedTimeInSec << std::endl;
 
     //SendToServer()
     retval = send(sock, (const char*)(&g_inputs), sizeof(g_inputs), 0);
