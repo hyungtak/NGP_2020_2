@@ -149,11 +149,9 @@ int main(int argc, char *argv[])
 
     HANDLE PThread, GThread, LThread;
 
-    //
     Event = CreateEvent(NULL, FALSE, TRUE, NULL);
     if (Event == NULL) return 1;
 
-    //HANDLE PThread;
     GThread = CreateThread(NULL, 0, GameThread, NULL, 0, NULL);
     while (1) {
         // accept()
@@ -177,12 +175,14 @@ int main(int argc, char *argv[])
         if (PThread == NULL) { closesocket(client_sock); }
         else { CloseHandle(PThread); }
 
-        printf("[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n",
-            ip_addr, ntohs(clientaddr.sin_port));
     }
 
     // closesocket()
     closesocket(listen_sock);
+
+    printf("[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n",
+        clientaddr.sin_addr, ntohs(clientaddr.sin_port));
+
 
     // 윈속 종료
     WSACleanup();
