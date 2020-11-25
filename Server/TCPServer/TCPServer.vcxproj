@@ -81,6 +81,7 @@
     <ClCompile Include="TCPServer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Protocol.h" />
     <ClInclude Include="SceneData.h" />
     <ClInclude Include="ServerGlobalData.h" />
   </ItemGroup>
