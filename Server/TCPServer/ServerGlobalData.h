@@ -5,6 +5,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
+
+#include "Protocol.h"
+
+
 #define MAX_PLAYER 3
 #define MAP_SIZE 30
 

@@ -1,8 +1,6 @@
 #pragma comment(lib, "ws2_32")
 #include "SceneData.h"
 
-#define SERVERPORT 9000
-#define BUFSIZE    512
 
 //SceneData 만들기!
 SceneData gameSceneData;
@@ -37,7 +35,16 @@ void err_display(char *msg)
 
 DWORD WINAPI LobbyThread(LPVOID arg)
 {
-    return 0;
+    bool EnterState[3] = { 0 };
+    bool ReadyState[3] = { 0 };
+
+
+    while (true)
+    {
+        if (EnterState[4])
+            if (ReadyState[4])
+                return 0;
+    }
 }
 
 DWORD WINAPI ProcessThread(LPVOID arg)
@@ -72,8 +79,6 @@ DWORD WINAPI ProcessThread(LPVOID arg)
         std::cout << Input.key_Down << " " << Input.key_Up << " " << Input.key_Right << " " << Input.key_Left << std::endl;
         gameSceneData.setKeyInput(client_sock, Input);
     
-        //retval = send(client_sock, reinterpret_cast<char *>(&ID), 4, 0);   // 추후 ID를 같이 보내줘야지 여러 마리의 NPC와 다른 플레이어들이 있을때
-                                                                             // 누가 움직였는지 클라이언트에서 알 수 있다.
 
         // 데이터 보내기 (send())
         PlayerStatus ps;
@@ -93,11 +98,6 @@ DWORD WINAPI ProcessThread(LPVOID arg)
             err_display("XY send()");
             break;
         }
-        if (4 != retval) 
-        {
-            printf("Data Send Error : x position\n");
-        }
-        
         SetEvent(Event);
     }
 
