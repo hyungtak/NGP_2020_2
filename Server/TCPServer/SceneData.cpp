@@ -7,7 +7,9 @@ SceneData::SceneData()
 		for (int j = 0; j < MAP_SIZE; j++)	//°¡·Î
 		{
 			m_mapData[i][j].isBomb = false;
-			if (i == 0 || i == MAP_SIZE-1 || j == 0 || j == MAP_SIZE-1)
+			if (i == 0 || i == MAP_SIZE - 1 || j == 0 || j == MAP_SIZE - 1)
+				m_mapData[i][j].isRock = true;
+			else if (i % 3 == 2 && j % 3 == 2)
 				m_mapData[i][j].isRock = true;
 			else
 				m_mapData[i][j].isRock = false;
@@ -33,22 +35,26 @@ void SceneData::update()
 
 		if (m_playerStatus[i].key.key_Down)
 		{
-			m_playerStatus[i].position.Y -= 1;
+			if(m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y-1].isRock == false)
+				m_playerStatus[i].position.Y -= 1;
 			m_playerStatus[i].key.key_Down = false;
 		}
 		if (m_playerStatus[i].key.key_Up)
 		{
-			m_playerStatus[i].position.Y += 1;
+			if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y + 1].isRock == false)
+				m_playerStatus[i].position.Y += 1;
 			m_playerStatus[i].key.key_Up = false;
 		}
 		if (m_playerStatus[i].key.key_Left)
 		{
-			m_playerStatus[i].position.X -= 1;
+			if (m_mapData[m_playerStatus[i].position.X-1][m_playerStatus[i].position.Y].isRock == false)
+				m_playerStatus[i].position.X -= 1;
 			m_playerStatus[i].key.key_Left = false;
 		}
 		if (m_playerStatus[i].key.key_Right)
 		{
-			m_playerStatus[i].position.X += 1;
+			if (m_mapData[m_playerStatus[i].position.X + 1][m_playerStatus[i].position.Y].isRock == false)
+				m_playerStatus[i].position.X += 1;
 			m_playerStatus[i].key.key_Right = false;
 		}
 		if (m_playerStatus[i].key.key_Space)				//ÆøÅº Ã³¸®
