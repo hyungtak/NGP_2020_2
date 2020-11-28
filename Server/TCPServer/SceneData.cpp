@@ -62,9 +62,9 @@ void SceneData::update()
 			if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].isBomb == false) 
 			{
 				if(m_qBomb.empty())
-					m_qBomb.push({ { m_playerStatus[i].position.X,m_playerStatus[i].position.Y }, BOMB_EXPLOSION_COUNT});
+					m_qBomb.push({ { m_playerStatus[i].position.X,m_playerStatus[i].position.Y }, BOMB_EXPLOSION_COUNT, 0, m_playerStatus[i].playerBombLength });
 				else
-					m_qBomb.push({ { m_playerStatus[i].position.X,m_playerStatus[i].position.Y }, BOMB_EXPLOSION_COUNT - m_qBomb.front().bombCount});
+					m_qBomb.push({ { m_playerStatus[i].position.X,m_playerStatus[i].position.Y }, BOMB_EXPLOSION_COUNT, BOMB_EXPLOSION_COUNT - m_qBomb.front().bombCount, m_playerStatus[i].playerBombLength });
 
 				m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].isBomb = true;
 			}
@@ -80,8 +80,28 @@ void SceneData::update()
 	//}
 	
 	if (!m_qBomb.empty()) {
-		if (m_qBomb.front().bombCount == 1)			//폭탄이 놓여지게 된 순간부터 카운트가 작동하도록 수정해야됨
+		if (m_qBomb.front().bombCount == m_qBomb.front().prevBombCount)			//폭탄이 놓여지게 된 순간부터 카운트가 작동하도록 수정해야됨
 		{
+			for (int i = 1; i < m_qBomb.front().bombExplosionLength + 1; i++)		//플레이어 길이로 처리하기
+			{
+				if (!m_mapData[m_qBomb.front().bombPoint.X - i][m_qBomb.front().bombPoint.Y].isRock)
+				{
+					m_mapData[m_qBomb.front().bombPoint.X - i][m_qBomb.front().bombPoint.Y].isBombFrame = true;
+				}
+				if (!m_mapData[m_qBomb.front().bombPoint.X + i][m_qBomb.front().bombPoint.Y].isRock)
+				{
+					m_mapData[m_qBomb.front().bombPoint.X + i][m_qBomb.front().bombPoint.Y].isBombFrame = true;
+				}
+				if (!m_mapData[m_qBomb.front().bombPoint.X][m_qBomb.front().bombPoint.Y - i].isRock)
+				{
+					m_mapData[m_qBomb.front().bombPoint.X][m_qBomb.front().bombPoint.Y - i].isBombFrame = true;
+				}
+				if (!m_mapData[m_qBomb.front().bombPoint.X][m_qBomb.front().bombPoint.Y + i].isRock)
+				{
+					m_mapData[m_qBomb.front().bombPoint.X][m_qBomb.front().bombPoint.Y + i].isBombFrame = true;
+				}
+			}
+			m_mapData[m_qBomb.front().bombPoint.X][m_qBomb.front().bombPoint.Y].isBombFrame = true;
 			m_mapData[m_qBomb.front().bombPoint.X][m_qBomb.front().bombPoint.Y].isBomb = false;
 			m_qBomb.pop();
 		}
@@ -109,7 +129,7 @@ void SceneData::setPlayer(SOCKET socket)
 	m_playerStatus[m_nPlayer].isAlive = true;
 	m_playerStatus[m_nPlayer].position = { (m_nPlayer * 5) + 1, (m_nPlayer * 5)+1 };
 	m_playerStatus[m_nPlayer].power = 0;
-	m_playerStatus[m_nPlayer].speed = 0;
+	m_playerStatus[m_nPlayer].playerBombLength = 1;
 	m_playerStatus[m_nPlayer].playerColor = PlayerColor(m_nPlayer);
 	++m_nPlayer;
 }

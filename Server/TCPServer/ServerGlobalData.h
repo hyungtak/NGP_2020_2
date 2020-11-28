@@ -32,6 +32,8 @@ struct BombData		//폭탄 타이머 및 폭탄 위치값 저장용
 {
 	Point bombPoint;
 	int bombCount;
+	int prevBombCount;
+	int bombExplosionLength;
 };
 
 enum Item
@@ -54,10 +56,10 @@ struct PlayerStatus  //플레이어의 소켓, 물줄기, 이동속도, 위치, 상태를 저장
 {
 	SOCKET		playerSocket;
 	KeyInput	key;
-	char 		speed; //플레이어 속도
 	char 		power; // 폭탄 길이
 	Point 		position; // 플레이어 위치
 	bool		isAlive; // 생존 여부
+	int			playerBombLength;	//폭탄 불길 길이
 	PlayerColor playerColor;
 };
 
@@ -66,5 +68,6 @@ struct MapData
 	Item 	item; // 아이템이 있는지
 	bool	isRock; //막혀있는 곳
 	bool 	isBomb; //폭탄이있는지
+	bool	isBombFrame;	//폭탄 불길이 있는지
 	PlayerColor playerColor;
 };
