@@ -13,8 +13,11 @@ SceneData::SceneData()
 				m_mapData[i][j].isRock = true;
 			else
 				m_mapData[i][j].isRock = false;
-
-			m_mapData[i][j].item = Item::EMPTY;
+		
+			if ((m_mapData[i][j].isRock == false) && (i % 6 == 2 && j % 5 == 1)) //æ∆¿Ã≈€µŒ±‚
+				m_mapData[i][j].item = Item::BALLON;
+			else
+				m_mapData[i][j].item = Item::EMPTY;
 			m_mapData[i][j].playerColor = PlayerColor::PLAYEREMPTY;
 		}
 	}
@@ -37,24 +40,40 @@ void SceneData::update()
 		{
 			if(m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y-1].isRock == false)
 				m_playerStatus[i].position.Y -= 1;
+			if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item == Item::BALLON) {
+				m_playerStatus[i].playerBombLength++;
+				m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item = Item::EMPTY;
+			}
 			m_playerStatus[i].key.key_Down = false;
 		}
 		if (m_playerStatus[i].key.key_Up)
 		{
 			if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y + 1].isRock == false)
 				m_playerStatus[i].position.Y += 1;
+			if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item == Item::BALLON) {
+				m_playerStatus[i].playerBombLength++;
+				m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item = Item::EMPTY;
+			}
 			m_playerStatus[i].key.key_Up = false;
 		}
 		if (m_playerStatus[i].key.key_Left)
 		{
 			if (m_mapData[m_playerStatus[i].position.X-1][m_playerStatus[i].position.Y].isRock == false)
 				m_playerStatus[i].position.X -= 1;
+			if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item == Item::BALLON) {
+				m_playerStatus[i].playerBombLength++;
+				m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item = Item::EMPTY;
+			}
 			m_playerStatus[i].key.key_Left = false;
 		}
 		if (m_playerStatus[i].key.key_Right)
 		{
 			if (m_mapData[m_playerStatus[i].position.X + 1][m_playerStatus[i].position.Y].isRock == false)
 				m_playerStatus[i].position.X += 1;
+			if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item == Item::BALLON) {
+				m_playerStatus[i].playerBombLength++;
+				m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item = Item::EMPTY;
+			}
 			m_playerStatus[i].key.key_Right = false;
 		}
 		if (m_playerStatus[i].key.key_Space)				//∆¯≈∫ √≥∏Æ
@@ -130,6 +149,7 @@ void SceneData::setPlayer(SOCKET socket)
 	m_playerStatus[m_nPlayer].position = { (m_nPlayer * 5) + 1, (m_nPlayer * 5)+1 };
 	m_playerStatus[m_nPlayer].power = 0;
 	m_playerStatus[m_nPlayer].playerBombLength = 1;
+	m_playerStatus[m_nPlayer].playerBombCount = 1;
 	m_playerStatus[m_nPlayer].playerColor = PlayerColor(m_nPlayer);
 	++m_nPlayer;
 }

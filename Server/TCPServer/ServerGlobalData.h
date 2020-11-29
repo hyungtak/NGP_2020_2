@@ -60,6 +60,7 @@ struct PlayerStatus  //플레이어의 소켓, 물줄기, 이동속도, 위치, 상태를 저장
 	Point 		position; // 플레이어 위치
 	bool		isAlive; // 생존 여부
 	int			playerBombLength;	//폭탄 불길 길이
+	int			playerBombCount;
 	PlayerColor playerColor;
 };
 

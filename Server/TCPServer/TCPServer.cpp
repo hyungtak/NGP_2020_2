@@ -85,8 +85,8 @@ DWORD WINAPI ProcessThread(LPVOID arg)
         gameSceneData.getPlayer(client_sock, &ps);
         Pos.X = ps.position.X;
         Pos.Y = ps.position.Y;
-MapData md[MAP_SIZE][MAP_SIZE];
-
+         MapData md[MAP_SIZE][MAP_SIZE];
+        
         for (int i = 0; i < MAP_SIZE; i++)
             for (int j = 0; j < MAP_SIZE; j++)
                md[i][j] = gameSceneData.getMapData(i, j);
