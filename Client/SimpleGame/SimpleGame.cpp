@@ -190,7 +190,7 @@ int connectSocket()
 
 int main(int argc, char* argv[])
 {
-    // Initialize GL things
+    // Initialize GL things 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowPosition(0, 0);
