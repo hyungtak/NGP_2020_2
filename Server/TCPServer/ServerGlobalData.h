@@ -12,7 +12,7 @@
 
 #define MAX_PLAYER 3
 #define MAP_SIZE 30
-#define BOMB_EXPLOSION_COUNT 3000000
+#define BOMB_EXPLOSION_COUNT 6000000
 
 struct KeyInput //키 입력 on off
 {
@@ -34,7 +34,12 @@ struct BombData		//폭탄 타이머 및 폭탄 위치값 저장용
 	Point bombPoint;	//위치
 	int bombCountdown;		//타이머
 	int bombExplosionLength;	//불꽃 길이
-	BombData(int px, int py, int count, int length) { bombPoint.X = px; bombPoint.Y = py; bombCountdown = count; bombExplosionLength = length; }
+	int playerID;
+	bool up = true;
+	bool down = true;
+	bool right = true;
+	bool left = true;
+	BombData(int px, int py, int count, int length, int id) { bombPoint.X = px; bombPoint.Y = py; bombCountdown = count; bombExplosionLength = length; playerID = id; }
 };
 
 enum Item

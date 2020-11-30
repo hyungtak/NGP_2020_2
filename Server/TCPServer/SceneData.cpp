@@ -14,7 +14,10 @@ SceneData::SceneData()
 			else
 				m_mapData[i][j].isRock = false;
 
-			m_mapData[i][j].item = Item::EMPTY;
+			if ((m_mapData[i][j].isRock == false) && (i % 6 == 2 && j % 5 == 1)) //아이템두기
+				m_mapData[i][j].item = Item::BALLON;
+			else
+				m_mapData[i][j].item = Item::EMPTY;
 			m_mapData[i][j].playerColor = PlayerColor::PLAYEREMPTY;
 		}
 	}
@@ -37,94 +40,135 @@ void SceneData::update()
 		{
 			if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y - 1].isRock == false)
 				m_playerStatus[i].position.Y -= 1;
+			if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item == Item::BALLON) {
+				m_playerStatus[i].playerBombLength++;
+				m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item = Item::EMPTY;
+			}
 			m_playerStatus[i].key.key_Down = false;
 		}
 		if (m_playerStatus[i].key.key_Up)
 		{
 			if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y + 1].isRock == false)
 				m_playerStatus[i].position.Y += 1;
+			if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item == Item::BALLON) {
+				m_playerStatus[i].playerBombLength++;
+				m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item = Item::EMPTY;
+			}
 			m_playerStatus[i].key.key_Up = false;
 		}
 		if (m_playerStatus[i].key.key_Left)
 		{
 			if (m_mapData[m_playerStatus[i].position.X - 1][m_playerStatus[i].position.Y].isRock == false)
 				m_playerStatus[i].position.X -= 1;
+			if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item == Item::BALLON) {
+				m_playerStatus[i].playerBombLength++;
+				m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item = Item::EMPTY;
+			}
 			m_playerStatus[i].key.key_Left = false;
 		}
 		if (m_playerStatus[i].key.key_Right)
 		{
 			if (m_mapData[m_playerStatus[i].position.X + 1][m_playerStatus[i].position.Y].isRock == false)
 				m_playerStatus[i].position.X += 1;
+			if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item == Item::BALLON) {
+				m_playerStatus[i].playerBombLength++;
+				m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item = Item::EMPTY;
+			}
 			m_playerStatus[i].key.key_Right = false;
 		}
 		if (m_playerStatus[i].key.key_Space)				//폭탄 처리
 		{
- 			if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].isBomb == false)
+			if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].isBomb == false)
 			{
-				if (m_playerStatus[i].playerBomb.empty())		//제일 처음 폭탄 둘때
+				if (m_playerStatus[i].bombCount > 0) 
 				{
-					m_playerStatus[i].playerBomb.emplace_back(m_playerStatus[i].position.X, m_playerStatus[i].position.Y, BOMB_EXPLOSION_COUNT, m_playerStatus[i].playerBombLength);
+					BombManger.emplace_back(m_playerStatus[i].position.X, m_playerStatus[i].position.Y, BOMB_EXPLOSION_COUNT, m_playerStatus[i].playerBombLength, i);
 					m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].isBomb = true;
+					m_playerStatus[i].bombCount--;
 				}
-				else
-				{
-					for (int j = 0; j < m_playerStatus[i].bombCount; j++)
-					{
-						if (m_playerStatus[i].playerBomb[j].bombCountdown <= 0)
-						{
-							m_playerStatus[i].playerBomb[j].bombPoint = { m_playerStatus[i].position.X, m_playerStatus[i].position.Y };
-							m_playerStatus[i].playerBomb[j].bombCountdown = BOMB_EXPLOSION_COUNT;
-							m_playerStatus[i].playerBomb[j].bombExplosionLength = m_playerStatus[i].playerBombLength;
-							m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].isBomb = true;
-							break;
-						}
-						if ((j == m_playerStatus[i].playerBomb.size() - 1) && (m_playerStatus[i].bombCount > m_playerStatus[i].playerBomb.size()))
-						{
-							m_playerStatus[i].playerBomb.emplace_back(m_playerStatus[i].position.X, m_playerStatus[i].position.Y, BOMB_EXPLOSION_COUNT, m_playerStatus[i].playerBombLength);
-							m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].isBomb = true;
-						}
-					}
-				}
-
 			}
 		}
 		m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].playerColor = PlayerColor(i);
+	}
 
-
-		if (!m_playerStatus[i].playerBomb.empty())
+		if (!BombManger.empty()) 
 		{
-			for (int k = 0; k < m_playerStatus[i].playerBomb.size(); k++)		//플레이어 길이로 처리하기
+			int n = BombManger.size();
+			for (int k = 0; k < n; k++)		//플레이어 길이로 처리하기
 			{
-				m_playerStatus[i].playerBomb[k].bombCountdown--;
+				BombManger[k].bombCountdown--;
 				
-				if (m_playerStatus[i].playerBomb[k].bombCountdown <= 0)
+				if (BombManger[k].bombCountdown <= 300000 && BombManger[k].bombCountdown > 0)
 				{
-					for (int l = 1; l < m_playerStatus[i].playerBombLength + 1; l++)
+					for (int l = 1; l < BombManger[k].bombExplosionLength + 1; l++)
 					{
-						if (!m_mapData[m_playerStatus[i].playerBomb[k].bombPoint.X - l][m_playerStatus[i].playerBomb[k].bombPoint.Y].isRock && !(m_playerStatus[i].playerBomb[k].bombPoint.X - l < 0))
+						if (!m_mapData[BombManger[k].bombPoint.X - l][BombManger[k].bombPoint.Y].isRock && !(BombManger[k].bombPoint.X - l < 0)&&BombManger[k].left)
 						{
-							m_mapData[m_playerStatus[i].playerBomb[k].bombPoint.X - l][m_playerStatus[i].playerBomb[k].bombPoint.Y].isBombFrame = true;
+							m_mapData[BombManger[k].bombPoint.X - l][BombManger[k].bombPoint.Y].isBombFrame = true;
 						}
-						if (!m_mapData[m_playerStatus[i].playerBomb[k].bombPoint.X + l][m_playerStatus[i].playerBomb[k].bombPoint.Y].isRock && !(m_playerStatus[i].playerBomb[k].bombPoint.X + l > MAP_SIZE))
+						else
 						{
-							m_mapData[m_playerStatus[i].playerBomb[k].bombPoint.X + l][m_playerStatus[i].playerBomb[k].bombPoint.Y].isBombFrame = true;
+							BombManger[k].left = false;
 						}
-						if (!m_mapData[m_playerStatus[i].playerBomb[k].bombPoint.X][m_playerStatus[i].playerBomb[k].bombPoint.Y - l].isRock && !(m_playerStatus[i].playerBomb[k].bombPoint.Y - l < 0))
+						if (!m_mapData[BombManger[k].bombPoint.X + l][BombManger[k].bombPoint.Y].isRock && !(BombManger[k].bombPoint.X + l > MAP_SIZE) && BombManger[k].right)
 						{
-							m_mapData[m_playerStatus[i].playerBomb[k].bombPoint.X][m_playerStatus[i].playerBomb[k].bombPoint.Y - l].isBombFrame = true;
+							m_mapData[BombManger[k].bombPoint.X + l][BombManger[k].bombPoint.Y].isBombFrame = true;
 						}
-						if (!m_mapData[m_playerStatus[i].playerBomb[k].bombPoint.X][m_playerStatus[i].playerBomb[k].bombPoint.Y + l].isRock && !(m_playerStatus[i].playerBomb[k].bombPoint.Y + l > MAP_SIZE))
+						else
 						{
-							m_mapData[m_playerStatus[i].playerBomb[k].bombPoint.X][m_playerStatus[i].playerBomb[k].bombPoint.Y + l].isBombFrame = true;
+							BombManger[k].right = false;
+						}
+						if (!m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y - l].isRock && !(BombManger[k].bombPoint.Y - l < 0) && BombManger[k].down)
+						{
+							m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y - l].isBombFrame = true;
+						}
+						else
+						{
+							BombManger[k].down = false;
+						}
+						if (!m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y + l].isRock && !(BombManger[k].bombPoint.Y + l > MAP_SIZE) && BombManger[k].up)
+						{
+							m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y + l].isBombFrame = true;
+						}
+						else
+						{
+							BombManger[k].up = false;
+						}
+						m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y].isBombFrame = true;//폭탄이 있던 곳
+						m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y].isBomb = false;
+					}
+				}
+				else if (BombManger[k].bombCountdown == 0)
+				{
+					for (int l = 1; l < BombManger[k].bombExplosionLength + 1; l++)
+					{
+						if (!m_mapData[BombManger[k].bombPoint.X - l][BombManger[k].bombPoint.Y].isRock && !(BombManger[k].bombPoint.X - l < 0))
+						{
+							m_mapData[BombManger[k].bombPoint.X - l][BombManger[k].bombPoint.Y].isBombFrame = false;
+						}
+						if (!m_mapData[BombManger[k].bombPoint.X + l][BombManger[k].bombPoint.Y].isRock && !(BombManger[k].bombPoint.X + l > MAP_SIZE))
+						{
+							m_mapData[BombManger[k].bombPoint.X + l][BombManger[k].bombPoint.Y].isBombFrame = false;
+						}
+						if (!m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y - l].isRock && !(BombManger[k].bombPoint.Y - l < 0))
+						{
+							m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y - l].isBombFrame = false;
+						}
+						if (!m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y + l].isRock && !(BombManger[k].bombPoint.Y + l > MAP_SIZE))
+						{
+							m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y + l].isBombFrame = false;
 						}
 
-						m_mapData[m_playerStatus[i].playerBomb[k].bombPoint.X][m_playerStatus[i].playerBomb[k].bombPoint.Y].isBombFrame = true;//폭탄이 있던 곳
-						m_mapData[m_playerStatus[i].playerBomb[k].bombPoint.X][m_playerStatus[i].playerBomb[k].bombPoint.Y].isBomb = false;
+						m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y].isBombFrame = false;//폭탄이 있던 곳
+						
 					}
+					m_playerStatus[BombManger[k].playerID].bombCount++;
+					BombManger.erase(BombManger.begin() + k);
+					k--; n--;
 				}
 			}
 		}
-	}
+	
 }
 
 void SceneData::setKeyInput(SOCKET socket, KeyInput key)
