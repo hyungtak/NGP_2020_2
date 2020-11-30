@@ -21,6 +21,7 @@ struct KeyInput //키 입력 on off
 	bool key_Left;
 	bool key_Right;
 	bool key_Space;
+	bool key_F5;
 };
 
 struct Point
@@ -54,6 +55,7 @@ struct PlayerStatus  //플레이어의 소켓, 물줄기, 이동속도, 위치, 상태를 저장
 	Point 		position; // 플레이어 위치
 	bool		isAlive; // 생존 여부
 	PlayerColor playerColor;
+	bool		isReady;	// 준비 여부
 };
 
 struct MapData

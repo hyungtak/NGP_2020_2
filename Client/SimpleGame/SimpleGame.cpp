@@ -93,6 +93,9 @@ void SpecialKeyDownInput(int key, int x, int y)
     case GLUT_KEY_RIGHT:
         g_inputs.key_Right = true;
         break;
+    case GLUT_KEY_F5:
+        g_inputs.key_F5 = true;
+        break;
     }
 
 }

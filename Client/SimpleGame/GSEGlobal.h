@@ -38,4 +38,5 @@ struct KeyInput //е╟ ют╥б on off
 	bool key_Left;
 	bool key_Right;
 	bool key_Space;
+	bool key_F5;
 };

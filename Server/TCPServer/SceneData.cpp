@@ -50,9 +50,25 @@ void SceneData::update()
 			m_playerStatus[i].key.key_Right = false;
 		}
 		
+		if (m_playerStatus[i].key.key_F5)
+		{
+			if (m_playerStatus[i].isReady == 0) {
+				m_playerStatus[i].isReady = 1;
+				readyPlayer++;
+			}
+			else {
+				m_playerStatus[i].isReady = 0;
+				readyPlayer--;
+			}
+			printf("readyPlayer : %d", readyPlayer);
+		}
+
+
 		m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].playerColor = PlayerColor(i);
 		
 	}
+
+
 
 	// 플레이어 좌표 출력 test용
 	//for (int i = 0; i < MAX_PLAYER; i++)

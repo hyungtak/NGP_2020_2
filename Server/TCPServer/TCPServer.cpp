@@ -43,6 +43,7 @@ void err_display(char *msg)
 
 DWORD WINAPI LobbyThread(LPVOID arg)
 {
+    printf("Running LobbyThread\n");
     int retval;
 
     // 윈속 초기화
@@ -68,8 +69,7 @@ DWORD WINAPI LobbyThread(LPVOID arg)
     if (retval == SOCKET_ERROR) err_quit("listen()");
 
 
-    bool EnterState[3] = { 0 };
-    bool ReadyState[3] = { 0 };
+    KeyInput Input{ 0 };
 
     // 데이터 통신에 사용할 변수
     SOCKET client_sock;
@@ -99,25 +99,45 @@ DWORD WINAPI LobbyThread(LPVOID arg)
 
         printf("MatchingQueue size : %d \n", MatchingQueue.size());
 
-        if (MatchingQueue.size() == 3)
-        {
-            for (int i = 0; i < 3; ++i)
-            {
-                PThread = CreateThread(NULL, 0, ProcessThread, (LPVOID)MatchingQueue[i], 0, NULL);
-                if (PThread == NULL) { closesocket(client_sock); }
-                else { CloseHandle(PThread); }
-            }
 
-            return 0;
+        if (MatchingQueue.size() == MAX_PLAYER)
+        {
+            /////////////// 수정해야 함
+            //while (1)
+            //{
+            //    retval = recv(client_sock, (char*)&Input, sizeof(KeyInput), 0);    // char : 1byte
+            //    if (retval == SOCKET_ERROR) {
+            //        err_display("recv()");
+            //        break;
+            //    }
+            //    else if (retval == 0)
+            //        break;
+            //}
+
+            //if (gameSceneData.readyPlayer == MAX_PLAYER)
+            ///////////////
+            {
+                for (int i = 0; i < 3; ++i)
+                {
+                    PThread = CreateThread(NULL, 0, ProcessThread, (LPVOID)MatchingQueue[i], 0, NULL);
+                    if (PThread == NULL) { closesocket(client_sock); }
+                    else { CloseHandle(PThread); }
+                }
+
+                printf("Exit Lobby Thread()\n");
+
+                ExitThread(0);
+
+            }
         }
     }
-    ExitThread;
-
-
 }
 
 DWORD WINAPI ProcessThread(LPVOID arg)
 {
+    printf("Running ProcessThread\n");
+
+
     SOCKET client_sock = (SOCKET)arg;
     SOCKADDR_IN clientaddr;
 
@@ -147,7 +167,7 @@ DWORD WINAPI ProcessThread(LPVOID arg)
             break;
 
 
-        std::cout << Input.key_Down << " " << Input.key_Up << " " << Input.key_Right << " " << Input.key_Left << std::endl;
+        //std::cout << Input.key_Down << " " << Input.key_Up << " " << Input.key_Right << " " << Input.key_Left << std::endl;
         gameSceneData.setKeyInput(client_sock, Input);
     
 
@@ -162,7 +182,7 @@ DWORD WINAPI ProcessThread(LPVOID arg)
             for (int j = 0; j < MAP_SIZE; j++)
                md[i][j] = gameSceneData.getMapData(i, j);
        
-        std::cout << md[0][0].isBomb << std::endl;
+        //std::cout << md[0][0].isBomb << std::endl;
         retval = send(client_sock, (char*)&md, sizeof(md), 0);
         if (retval == SOCKET_ERROR) 
         {
@@ -202,6 +222,7 @@ int main(int argc, char *argv[])
     GThread = CreateThread(NULL, 0, GameThread, NULL, 0, NULL);
     if (GThread == NULL)
         printf("Create GThread Error\n");
+
     LThread = CreateThread(NULL, 0, LobbyThread, NULL, 0, NULL);
     if(LThread == NULL)
         printf("Create LThread Error\n");
