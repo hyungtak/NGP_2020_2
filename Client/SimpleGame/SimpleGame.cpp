@@ -9,6 +9,7 @@
 #include "Dependencies\glew.h"
 #include "Dependencies\freeglut.h"
 #include "GSEGame.h"
+#include "GSELobby.h"
 #include "GSEGlobal.h"
 
 #define SERVERIP   "127.0.0.1"
@@ -16,6 +17,7 @@
 #define BUFSIZE    512
 
 GSEGame* g_game = NULL;
+GSELobby* g_lobby = NULL;
 KeyInput g_inputs;
 
 WSADATA wsa;

@@ -10,8 +10,7 @@ public:
 
 private:
 	PlayerStatus	m_playerStatus[MAX_PLAYER];
-	int			m_nPlayer = 0;
-	std::queue<BombData>	m_qBomb;
+	int				m_nPlayer = 0;
 	unsigned int	m_nBombCheckCount = 0;
 public:
 	MapData			m_mapData[MAP_SIZE][MAP_SIZE];
