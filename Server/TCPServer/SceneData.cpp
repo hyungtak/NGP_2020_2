@@ -87,10 +87,24 @@ void SceneData::update()
 				}
 			}
 		}
+		if (m_playerStatus[i].key.key_F5)
+		{
+			if (m_playerStatus[i].isReady == 0) {
+				m_playerStatus[i].isReady = 1;
+				readyPlayer++;
+			}
+			else {
+				m_playerStatus[i].isReady = 0;
+				readyPlayer--;
+			}
+			printf("readyPlayer : %d", readyPlayer);
+		}
+
+
 		m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].playerColor = PlayerColor(i);
 	}
 
-		if (!BombManger.empty()) 
+if (!BombManger.empty()) 
 		{
 			int n = BombManger.size();
 			for (int k = 0; k < n; k++)		//플레이어 길이로 처리하기
@@ -157,7 +171,6 @@ void SceneData::update()
 						{
 							m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y + l].isBombFrame = false;
 						}
-
 						m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y].isBombFrame = false;//폭탄이 있던 곳
 						
 					}

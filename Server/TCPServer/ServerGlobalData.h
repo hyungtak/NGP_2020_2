@@ -21,6 +21,7 @@ struct KeyInput //키 입력 on off
 	bool key_Left;
 	bool key_Right;
 	bool key_Space;
+	bool key_F5;
 };
 
 struct Point
@@ -68,6 +69,7 @@ SOCKET					playerSocket;
 	int						playerBombLength;		//폭탄 불길 길이
 	std::vector<BombData>	playerBomb;				//플레이어 폭탄
 	PlayerColor				playerColor;
+	bool		isReady;	// 준비 여부
 };
 
 struct MapData

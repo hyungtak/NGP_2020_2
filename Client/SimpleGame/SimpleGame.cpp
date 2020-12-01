@@ -97,6 +97,9 @@ void SpecialKeyDownInput(int key, int x, int y)
     case GLUT_KEY_RIGHT:
         g_inputs.key_Right = true;
         break;
+    case GLUT_KEY_F5:
+        g_inputs.key_F5 = true;
+        break;
     }
 
 }
@@ -194,7 +197,7 @@ int connectSocket()
 
 int main(int argc, char* argv[])
 {
-    // Initialize GL things
+    // Initialize GL things 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowPosition(0, 0);

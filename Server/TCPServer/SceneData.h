@@ -10,7 +10,7 @@ public:
 
 private:
 	PlayerStatus	m_playerStatus[MAX_PLAYER];
-	int				m_nPlayer = 0;
+int				m_nPlayer = 0;
 	unsigned int	m_nBombCheckCount = 0;
 	std::vector<BombData>	BombManger;
 public:
@@ -20,5 +20,7 @@ public:
 	MapData getMapData(int n, int m) { return m_mapData[n][m]; };
 	void setPlayer(SOCKET socket);
 	void getPlayer(SOCKET socket, PlayerStatus* playerStatus);
+
+	int	readyPlayer = 0;
 };
 
