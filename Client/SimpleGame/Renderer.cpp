@@ -13,7 +13,7 @@ Renderer::~Renderer()
 
 void Renderer::Initialize(int windowSizeX, int windowSizeY)
 {
-	//Set window size
+	//Set window sizedjEJ
 	m_WindowSizeX = windowSizeX;
 	m_WindowSizeY = windowSizeY;
 

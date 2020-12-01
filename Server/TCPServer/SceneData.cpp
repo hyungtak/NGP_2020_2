@@ -13,12 +13,11 @@ SceneData::SceneData()
 				m_mapData[i][j].isRock = true;
 			else
 				m_mapData[i][j].isRock = false;
-		
-			if ((m_mapData[i][j].isRock == false) && (i % 6 == 2 && j % 5 == 1)) //아이템두기
+
+if ((m_mapData[i][j].isRock == false) && (i % 6 == 2 && j % 5 == 1)) //아이템두기
 				m_mapData[i][j].item = Item::BALLON;
 			else
-				m_mapData[i][j].item = Item::EMPTY;
-			m_mapData[i][j].playerColor = PlayerColor::PLAYEREMPTY;
+				m_mapData[i][j].item = Item::EMPTY;			m_mapData[i][j].playerColor = PlayerColor::PLAYEREMPTY;
 		}
 	}
 }
@@ -38,7 +37,7 @@ void SceneData::update()
 
 		if (m_playerStatus[i].key.key_Down)
 		{
-			if(m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y-1].isRock == false)
+			if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y - 1].isRock == false)
 				m_playerStatus[i].position.Y -= 1;
 			if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item == Item::BALLON) {
 				m_playerStatus[i].playerBombLength++;
@@ -58,7 +57,7 @@ void SceneData::update()
 		}
 		if (m_playerStatus[i].key.key_Left)
 		{
-			if (m_mapData[m_playerStatus[i].position.X-1][m_playerStatus[i].position.Y].isRock == false)
+			if (m_mapData[m_playerStatus[i].position.X - 1][m_playerStatus[i].position.Y].isRock == false)
 				m_playerStatus[i].position.X -= 1;
 			if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item == Item::BALLON) {
 				m_playerStatus[i].playerBombLength++;
@@ -78,56 +77,97 @@ void SceneData::update()
 		}
 		if (m_playerStatus[i].key.key_Space)				//폭탄 처리
 		{
-			if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].isBomb == false) 
+			if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].isBomb == false)
 			{
-				if(m_qBomb.empty())
-					m_qBomb.push({ { m_playerStatus[i].position.X,m_playerStatus[i].position.Y }, BOMB_EXPLOSION_COUNT, 0, m_playerStatus[i].playerBombLength });
-				else
-					m_qBomb.push({ { m_playerStatus[i].position.X,m_playerStatus[i].position.Y }, BOMB_EXPLOSION_COUNT, BOMB_EXPLOSION_COUNT - m_qBomb.front().bombCount, m_playerStatus[i].playerBombLength });
-
-				m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].isBomb = true;
+				if (m_playerStatus[i].bombCount > 0) 
+				{
+					BombManger.emplace_back(m_playerStatus[i].position.X, m_playerStatus[i].position.Y, BOMB_EXPLOSION_COUNT, m_playerStatus[i].playerBombLength, i);
+					m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].isBomb = true;
+					m_playerStatus[i].bombCount--;
+				}
 			}
 		}
 		m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].playerColor = PlayerColor(i);
 	}
 
-	// 플레이어 좌표 출력 test용
-	//for (int i = 0; i < MAX_PLAYER; i++)
-	//{
-	//	printf("m_playerStatus[%d].position = (%d, %d)\n", 
-	//		i, m_playerStatus[i].position.X, m_playerStatus[i].position.Y);
-	//}
-	
-	if (!m_qBomb.empty()) {
-		if (m_qBomb.front().bombCount == m_qBomb.front().prevBombCount)			//폭탄이 놓여지게 된 순간부터 카운트가 작동하도록 수정해야됨
+		if (!BombManger.empty()) 
 		{
-			for (int i = 1; i < m_qBomb.front().bombExplosionLength + 1; i++)		//플레이어 길이로 처리하기
+			int n = BombManger.size();
+			for (int k = 0; k < n; k++)		//플레이어 길이로 처리하기
 			{
-				if (!m_mapData[m_qBomb.front().bombPoint.X - i][m_qBomb.front().bombPoint.Y].isRock)
+				BombManger[k].bombCountdown--;
+				
+				if (BombManger[k].bombCountdown <= 300000 && BombManger[k].bombCountdown > 0)
 				{
-					m_mapData[m_qBomb.front().bombPoint.X - i][m_qBomb.front().bombPoint.Y].isBombFrame = true;
+					for (int l = 1; l < BombManger[k].bombExplosionLength + 1; l++)
+					{
+						if (!m_mapData[BombManger[k].bombPoint.X - l][BombManger[k].bombPoint.Y].isRock && !(BombManger[k].bombPoint.X - l < 0)&&BombManger[k].left)
+						{
+							m_mapData[BombManger[k].bombPoint.X - l][BombManger[k].bombPoint.Y].isBombFrame = true;
+						}
+						else
+						{
+							BombManger[k].left = false;
+						}
+						if (!m_mapData[BombManger[k].bombPoint.X + l][BombManger[k].bombPoint.Y].isRock && !(BombManger[k].bombPoint.X + l > MAP_SIZE) && BombManger[k].right)
+						{
+							m_mapData[BombManger[k].bombPoint.X + l][BombManger[k].bombPoint.Y].isBombFrame = true;
+						}
+						else
+						{
+							BombManger[k].right = false;
+						}
+						if (!m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y - l].isRock && !(BombManger[k].bombPoint.Y - l < 0) && BombManger[k].down)
+						{
+							m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y - l].isBombFrame = true;
+						}
+						else
+						{
+							BombManger[k].down = false;
+						}
+						if (!m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y + l].isRock && !(BombManger[k].bombPoint.Y + l > MAP_SIZE) && BombManger[k].up)
+						{
+							m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y + l].isBombFrame = true;
+						}
+						else
+						{
+							BombManger[k].up = false;
+						}
+						m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y].isBombFrame = true;//폭탄이 있던 곳
+						m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y].isBomb = false;
+					}
 				}
-				if (!m_mapData[m_qBomb.front().bombPoint.X + i][m_qBomb.front().bombPoint.Y].isRock)
+				else if (BombManger[k].bombCountdown == 0)
 				{
-					m_mapData[m_qBomb.front().bombPoint.X + i][m_qBomb.front().bombPoint.Y].isBombFrame = true;
-				}
-				if (!m_mapData[m_qBomb.front().bombPoint.X][m_qBomb.front().bombPoint.Y - i].isRock)
-				{
-					m_mapData[m_qBomb.front().bombPoint.X][m_qBomb.front().bombPoint.Y - i].isBombFrame = true;
-				}
-				if (!m_mapData[m_qBomb.front().bombPoint.X][m_qBomb.front().bombPoint.Y + i].isRock)
-				{
-					m_mapData[m_qBomb.front().bombPoint.X][m_qBomb.front().bombPoint.Y + i].isBombFrame = true;
+					for (int l = 1; l < BombManger[k].bombExplosionLength + 1; l++)
+					{
+						if (!m_mapData[BombManger[k].bombPoint.X - l][BombManger[k].bombPoint.Y].isRock && !(BombManger[k].bombPoint.X - l < 0))
+						{
+							m_mapData[BombManger[k].bombPoint.X - l][BombManger[k].bombPoint.Y].isBombFrame = false;
+						}
+						if (!m_mapData[BombManger[k].bombPoint.X + l][BombManger[k].bombPoint.Y].isRock && !(BombManger[k].bombPoint.X + l > MAP_SIZE))
+						{
+							m_mapData[BombManger[k].bombPoint.X + l][BombManger[k].bombPoint.Y].isBombFrame = false;
+						}
+						if (!m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y - l].isRock && !(BombManger[k].bombPoint.Y - l < 0))
+						{
+							m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y - l].isBombFrame = false;
+						}
+						if (!m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y + l].isRock && !(BombManger[k].bombPoint.Y + l > MAP_SIZE))
+						{
+							m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y + l].isBombFrame = false;
+						}
+
+						m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y].isBombFrame = false;//폭탄이 있던 곳
+						
+					}
+					m_playerStatus[BombManger[k].playerID].bombCount++;
+					BombManger.erase(BombManger.begin() + k);
+					k--; n--;
 				}
 			}
-			m_mapData[m_qBomb.front().bombPoint.X][m_qBomb.front().bombPoint.Y].isBombFrame = true;
-			m_mapData[m_qBomb.front().bombPoint.X][m_qBomb.front().bombPoint.Y].isBomb = false;
-			m_qBomb.pop();
 		}
-		if (!m_qBomb.empty())
-			m_qBomb.front().bombCount--;
-	}
-
+	
 }
 
 void SceneData::setKeyInput(SOCKET socket, KeyInput key)
@@ -147,7 +187,7 @@ void SceneData::setPlayer(SOCKET socket)
 	m_playerStatus[m_nPlayer].playerSocket = socket;
 	m_playerStatus[m_nPlayer].isAlive = true;
 	m_playerStatus[m_nPlayer].position = { (m_nPlayer * 5) + 1, (m_nPlayer * 5)+1 };
-	m_playerStatus[m_nPlayer].power = 0;
+	m_playerStatus[m_nPlayer].bombCount = 3;
 	m_playerStatus[m_nPlayer].playerBombLength = 1;
 	m_playerStatus[m_nPlayer].playerBombCount = 1;
 	m_playerStatus[m_nPlayer].playerColor = PlayerColor(m_nPlayer);
