@@ -41,6 +41,10 @@ void GSEGame::RendererScene()
 			{
 				m_renderer->DrawSolidRect(i * 20, j * 20, 0, 20, 0.8f, 0.8f, 0.8f, 1.0f);		//밝은 회색
 			}
+			if (m_pMapdata[i][j].isBombFrame == true)		//벽이 있을 경우
+			{
+				m_renderer->DrawSolidRect(i * 20, j * 20, 0, 20, 0.5f, 0.3f, 0.0f, 1.0f);		//
+			}
 			if (m_pMapdata[i][j].item != Item::EMPTY)	//아이템이 있을 경우
 			{
 				switch (m_pMapdata[i][j].item)
@@ -84,6 +88,7 @@ void GSEGame::SetMapData(MapData (*map_data)[MAP_SIZE])
 			m_pMapdata[i][j].isBomb = map_data[i][j].isBomb;
 			m_pMapdata[i][j].isRock = map_data[i][j].isRock;
 			m_pMapdata[i][j].item = map_data[i][j].item;
+			m_pMapdata[i][j].isBombFrame = map_data[i][j].isBombFrame;
 			m_pMapdata[i][j].playerColor = map_data[i][j].playerColor;
 		}
 	}

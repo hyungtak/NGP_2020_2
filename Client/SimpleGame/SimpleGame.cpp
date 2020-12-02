@@ -9,6 +9,7 @@
 #include "Dependencies\glew.h"
 #include "Dependencies\freeglut.h"
 #include "GSEGame.h"
+//#include "GSELobby.h"
 #include "GSEGlobal.h"
 
 #define SERVERIP   "127.0.0.1"
@@ -16,6 +17,7 @@
 #define BUFSIZE    512
 
 GSEGame* g_game = NULL;
+//GSELobby* g_lobby = NULL;
 KeyInput g_inputs;
 
 WSADATA wsa;
@@ -94,6 +96,9 @@ void SpecialKeyDownInput(int key, int x, int y)
         break;
     case GLUT_KEY_RIGHT:
         g_inputs.key_Right = true;
+        break;
+    case GLUT_KEY_F5:
+        g_inputs.key_F5 = true;
         break;
     }
 
@@ -192,7 +197,7 @@ int connectSocket()
 
 int main(int argc, char* argv[])
 {
-    // Initialize GL things
+    // Initialize GL things 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowPosition(0, 0);
