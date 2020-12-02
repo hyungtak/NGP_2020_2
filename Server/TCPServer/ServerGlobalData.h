@@ -12,7 +12,7 @@
 
 #define MAX_PLAYER 3
 #define MAP_SIZE 30
-#define BOMB_EXPLOSION_COUNT 6000000
+#define BOMB_EXPLOSION_COUNT 60
 
 struct KeyInput //е╟ ют╥б on off
 {
