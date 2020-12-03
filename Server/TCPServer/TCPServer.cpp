@@ -5,7 +5,6 @@
 SceneData gameSceneData;
 HANDLE Event;
 HANDLE PThread, GThread, LThread;
-int g_prevTimeInMillisecond = 0;
 
 // 연결된 소켓 저장
 std::vector<SOCKET> MatchingQueue;
@@ -95,7 +94,7 @@ DWORD WINAPI LobbyThread(LPVOID arg)
         printf("\n[TCP 서버] 클라이언트 접속: IP 주소=%s, 포트 번호=%d\n",
             ip_addr, ntohs(clientaddr.sin_port));
         //플레이어 연결됐으니 씬데이터에 플레이어 만들어주기
-        gameSceneData.setPlayer(client_sock);
+        gameSceneData.SetPlayer(client_sock);
 
         printf("MatchingQueue size : %d \n", MatchingQueue.size());
 
@@ -156,19 +155,15 @@ DWORD WINAPI ProcessThread(LPVOID arg)
         else if (retval == 0)
             break;
 
-        gameSceneData.setKeyInput(client_sock, Input);
+        gameSceneData.SetKeyInput(client_sock, Input);
 
         // 데이터 보내기 (send())
-        PlayerStatus ps;
-        gameSceneData.getPlayer(client_sock, &ps);
-        Pos.X = ps.position.X;
-        Pos.Y = ps.position.Y;
+
         MapData md[MAP_SIZE][MAP_SIZE];
         
         for (int i = 0; i < MAP_SIZE; i++)
             for (int j = 0; j < MAP_SIZE; j++)
-               md[i][j] = gameSceneData.getMapData(i, j);
-        //std::cout << md[0][0].isBomb << std::endl;
+               md[i][j] = gameSceneData.GetMapData(i, j);
         retval = send(client_sock, (char*)&md, sizeof(md), 0);
         if (retval == SOCKET_ERROR) 
         {
@@ -190,7 +185,7 @@ DWORD WINAPI GameThread(LPVOID arg)
 {
     while (true)
     {
-        gameSceneData.update();
+        gameSceneData.Update();
     }
     return 0;
 }

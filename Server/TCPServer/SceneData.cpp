@@ -19,7 +19,8 @@ SceneData::SceneData()
 			else if ((m_mapData[i][j].isRock == false) && (i % 8 == 3 && j % 6 == 3))
 				m_mapData[i][j].item = Item::BALLON;
 			else
-				m_mapData[i][j].item = Item::EMPTY;			m_mapData[i][j].playerColor = PlayerColor::PLAYEREMPTY;
+				m_mapData[i][j].item = Item::EMPTY;			
+			m_mapData[i][j].playerColor = PlayerColor::PLAYEREMPTY;
 		}
 	}
 }
@@ -29,200 +30,217 @@ SceneData::~SceneData()
 
 }
 
-void SceneData::update()	
+void SceneData::Update()	
 {
-	int j = 0;
-
-	for (int i = 0; i < m_nPlayer; i++) //º¯°æÇØ¾ßÇÔ
+	for (int i = 0; i < MAX_PLAYER; i++) //º¯°æÇØ¾ßÇÔ
 	{
-		if (m_playerStatus[i].isAlive) {
-			m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].playerColor = PlayerColor::PLAYEREMPTY;
+		if (m_players[i].isAlive)
+		{
+			m_mapData[m_players[i].playerPosition.X][m_players[i].playerPosition.Y].playerColor = PlayerColor::PLAYEREMPTY;
 
-			if (m_playerStatus[i].key.key_Down)
+			if (m_players[i].playerKeyInput.key_Down) //¾Æ·¡Å° Ã³¸®
 			{
-				if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y - 1].isRock == false)
-					m_playerStatus[i].position.Y -= 1;
-				if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item == Item::POTION) {
-					m_playerStatus[i].playerBombLength++;
-					m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item = Item::EMPTY;
-				}
-				else if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item == Item::BALLON) {
-					m_playerStatus[i].bombCount++;
-					m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item = Item::EMPTY;
-				}
-				m_playerStatus[i].key.key_Down = false;
-			}
-			if (m_playerStatus[i].key.key_Up)
-			{
-				if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y + 1].isRock == false)
-					m_playerStatus[i].position.Y += 1;
-				if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item == Item::POTION) {
-					m_playerStatus[i].playerBombLength++;
-					m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item = Item::EMPTY;
-				}
-				else if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item == Item::BALLON) {
-					m_playerStatus[i].bombCount++;
-					m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item = Item::EMPTY;
-				}
-				m_playerStatus[i].key.key_Up = false;
-			}
-			if (m_playerStatus[i].key.key_Left)
-			{
-				if (m_mapData[m_playerStatus[i].position.X - 1][m_playerStatus[i].position.Y].isRock == false)
-					m_playerStatus[i].position.X -= 1;
-				if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item == Item::POTION) {
-					m_playerStatus[i].playerBombLength++;
-					m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item = Item::EMPTY;
-				}
-				else if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item == Item::BALLON) {
-					m_playerStatus[i].bombCount++;
-					m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item = Item::EMPTY;
-				}
-				m_playerStatus[i].key.key_Left = false;
-			}
-			if (m_playerStatus[i].key.key_Right)
-			{
-				if (m_mapData[m_playerStatus[i].position.X + 1][m_playerStatus[i].position.Y].isRock == false)
-					m_playerStatus[i].position.X += 1;
-				if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item == Item::POTION) {
-					m_playerStatus[i].playerBombLength++;
-					m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item = Item::EMPTY;
-				}
-				else if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item == Item::BALLON) {
-					m_playerStatus[i].bombCount++;
-					m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].item = Item::EMPTY;
-				}
-				m_playerStatus[i].key.key_Right = false;
-			}
-			if (m_playerStatus[i].key.key_Space)				//ÆøÅº Ã³¸®
-			{
-				if (m_playerStatus[i].bombCount > 0)
+				if (m_mapData[m_players[i].playerPosition.X][m_players[i].playerPosition.Y - 1].isRock == false)
 				{
-					if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].isBomb == false)
+					m_players[i].playerPosition.Y -= 1;
+				}
+				if (m_mapData[m_players[i].playerPosition.X][m_players[i].playerPosition.Y].item == Item::POTION)
+				{
+					m_players[i].playerBombLength++;
+					m_mapData[m_players[i].playerPosition.X][m_players[i].playerPosition.Y].item = Item::EMPTY;
+				}
+				else if (m_mapData[m_players[i].playerPosition.X][m_players[i].playerPosition.Y].item == Item::BALLON)
+				{
+					m_players[i].playerBombCount++;
+					m_mapData[m_players[i].playerPosition.X][m_players[i].playerPosition.Y].item = Item::EMPTY;
+				}
+				m_players[i].playerKeyInput.key_Down = false;
+			}
+			if (m_players[i].playerKeyInput.key_Up) //À§Å°
+			{
+				if (m_mapData[m_players[i].playerPosition.X][m_players[i].playerPosition.Y + 1].isRock == false)
+				{
+					m_players[i].playerPosition.Y += 1;
+				}
+				if (m_mapData[m_players[i].playerPosition.X][m_players[i].playerPosition.Y].item == Item::POTION)
+				{
+					m_players[i].playerBombLength++;
+					m_mapData[m_players[i].playerPosition.X][m_players[i].playerPosition.Y].item = Item::EMPTY;
+				}
+				else if (m_mapData[m_players[i].playerPosition.X][m_players[i].playerPosition.Y].item == Item::BALLON) 
+				{
+					m_players[i].playerBombCount++;
+					m_mapData[m_players[i].playerPosition.X][m_players[i].playerPosition.Y].item = Item::EMPTY;
+				}
+				m_players[i].playerKeyInput.key_Up = false;
+			}
+			if (m_players[i].playerKeyInput.key_Left) // ¿ÞÂÊ
+			{
+				if (m_mapData[m_players[i].playerPosition.X - 1][m_players[i].playerPosition.Y].isRock == false)
+				{
+					m_players[i].playerPosition.X -= 1;
+				}
+				if (m_mapData[m_players[i].playerPosition.X][m_players[i].playerPosition.Y].item == Item::POTION) 
+				{
+					m_players[i].playerBombLength++;
+					m_mapData[m_players[i].playerPosition.X][m_players[i].playerPosition.Y].item = Item::EMPTY;
+				}
+				else if (m_mapData[m_players[i].playerPosition.X][m_players[i].playerPosition.Y].item == Item::BALLON)
+				{
+					m_players[i].playerBombCount++;
+					m_mapData[m_players[i].playerPosition.X][m_players[i].playerPosition.Y].item = Item::EMPTY;
+				}
+				m_players[i].playerKeyInput.key_Left = false;
+			}
+			if (m_players[i].playerKeyInput.key_Right)
+			{
+				if (m_mapData[m_players[i].playerPosition.X + 1][m_players[i].playerPosition.Y].isRock == false) 
+				{
+					m_players[i].playerPosition.X += 1;
+				}
+				if (m_mapData[m_players[i].playerPosition.X][m_players[i].playerPosition.Y].item == Item::POTION)
+				{
+					m_players[i].playerBombLength++;
+					m_mapData[m_players[i].playerPosition.X][m_players[i].playerPosition.Y].item = Item::EMPTY;
+				}
+				else if (m_mapData[m_players[i].playerPosition.X][m_players[i].playerPosition.Y].item == Item::BALLON)
+				{
+					m_players[i].playerBombCount++;
+					m_mapData[m_players[i].playerPosition.X][m_players[i].playerPosition.Y].item = Item::EMPTY;
+				}
+				m_players[i].playerKeyInput.key_Right = false;
+			}
+			if (m_players[i].playerKeyInput.key_Space)				//ÆøÅº Ã³¸®
+			{
+				if (m_players[i].playerBombCount > 0)
+				{
+					if (m_mapData[m_players[i].playerPosition.X][m_players[i].playerPosition.Y].isBomb == false)
 					{
-						BombManger.emplace_back(m_playerStatus[i].position.X, m_playerStatus[i].position.Y, std::chrono::system_clock::now(), m_playerStatus[i].playerBombLength, i);
-						m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].isBomb = true;
-						m_playerStatus[i].bombCount--;
+						m_bombManger.emplace_back(m_players[i].playerPosition.X, m_players[i].playerPosition.Y, std::chrono::system_clock::now(), m_players[i].playerBombLength, i);
+						m_mapData[m_players[i].playerPosition.X][m_players[i].playerPosition.Y].isBomb = true;
+						m_players[i].playerBombCount--;
 					}
 				}
 			}
-			m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].playerColor = PlayerColor(i);
+			m_mapData[m_players[i].playerPosition.X][m_players[i].playerPosition.Y].playerColor = PlayerColor(i);
 		}
 	}
 
-	if (!BombManger.empty())
+	if (!m_bombManger.empty())
 	{
-		int n = BombManger.size();
+		int n = m_bombManger.size();
 		for (int k = 0; k < n; k++)		//ÇÃ·¹ÀÌ¾î ±æÀÌ·Î Ã³¸®ÇÏ±â
 		{
-			if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - BombManger[k].bombCountdown) >= std::chrono::seconds(2)
-				&& std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - BombManger[k].bombCountdown) < std::chrono::seconds(5))
+			if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - m_bombManger[k].bombCountdown) >= std::chrono::seconds(2)
+				&& std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - m_bombManger[k].bombCountdown) < std::chrono::seconds(3))
 			{
-				for (int l = 1; l < BombManger[k].bombExplosionLength + 1; l++)
+				for (int l = 1; l < m_bombManger[k].bombExplosionLength + 1; l++)
 				{
-					if (!m_mapData[BombManger[k].bombPoint.X - l][BombManger[k].bombPoint.Y].isRock && !(BombManger[k].bombPoint.X - l < 0) && BombManger[k].left)
+					if (!m_mapData[m_bombManger[k].bombPoint.X - l][m_bombManger[k].bombPoint.Y].isRock && !(m_bombManger[k].bombPoint.X - l < 0) && m_bombManger[k].left)
 					{
-						m_mapData[BombManger[k].bombPoint.X - l][BombManger[k].bombPoint.Y].isBombFrame = true;
+						m_mapData[m_bombManger[k].bombPoint.X - l][m_bombManger[k].bombPoint.Y].isBombFrame = true;
 					}
 					else
 					{
-						BombManger[k].left = false;
+						m_bombManger[k].left = false;
 					}
-					if (!m_mapData[BombManger[k].bombPoint.X + l][BombManger[k].bombPoint.Y].isRock && !(BombManger[k].bombPoint.X + l > MAP_SIZE) && BombManger[k].right)
+					if (!m_mapData[m_bombManger[k].bombPoint.X + l][m_bombManger[k].bombPoint.Y].isRock && !(m_bombManger[k].bombPoint.X + l > MAP_SIZE) && m_bombManger[k].right)
 					{
-						m_mapData[BombManger[k].bombPoint.X + l][BombManger[k].bombPoint.Y].isBombFrame = true;
+						m_mapData[m_bombManger[k].bombPoint.X + l][m_bombManger[k].bombPoint.Y].isBombFrame = true;
 					}
 					else
 					{
-						BombManger[k].right = false;
+						m_bombManger[k].right = false;
 					}
-					if (!m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y - l].isRock && !(BombManger[k].bombPoint.Y - l < 0) && BombManger[k].down)
+					if (!m_mapData[m_bombManger[k].bombPoint.X][m_bombManger[k].bombPoint.Y - l].isRock && !(m_bombManger[k].bombPoint.Y - l < 0) && m_bombManger[k].down)
 					{
-						m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y - l].isBombFrame = true;
+						m_mapData[m_bombManger[k].bombPoint.X][m_bombManger[k].bombPoint.Y - l].isBombFrame = true;
 					}
 					else
 					{
-						BombManger[k].down = false;
+						m_bombManger[k].down = false;
 					}
-					if (!m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y + l].isRock && !(BombManger[k].bombPoint.Y + l > MAP_SIZE) && BombManger[k].up)
+					if (!m_mapData[m_bombManger[k].bombPoint.X][m_bombManger[k].bombPoint.Y + l].isRock && !(m_bombManger[k].bombPoint.Y + l > MAP_SIZE) && m_bombManger[k].up)
 					{
-						m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y + l].isBombFrame = true;
+						m_mapData[m_bombManger[k].bombPoint.X][m_bombManger[k].bombPoint.Y + l].isBombFrame = true;
 					}
 					else
 					{
-						BombManger[k].up = false;
+						m_bombManger[k].up = false;
 					}
-					m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y].isBombFrame = true;//ÆøÅºÀÌ ÀÖ´ø °÷
-					m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y].isBomb = false;
+					m_mapData[m_bombManger[k].bombPoint.X][m_bombManger[k].bombPoint.Y].isBombFrame = true;//ÆøÅºÀÌ ÀÖ´ø °÷
+					m_mapData[m_bombManger[k].bombPoint.X][m_bombManger[k].bombPoint.Y].isBomb = false;
 				}
 			}
-			else if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - BombManger[k].bombCountdown) >= std::chrono::seconds(5))
+			else if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - m_bombManger[k].bombCountdown) >= std::chrono::seconds(3))
 			{
-				for (int l = 1; l < BombManger[k].bombExplosionLength + 1; l++)
+				for (int l = 1; l < m_bombManger[k].bombExplosionLength + 1; l++)
 				{
-					if (!m_mapData[BombManger[k].bombPoint.X - l][BombManger[k].bombPoint.Y].isRock && !(BombManger[k].bombPoint.X - l < 0))
+					if (!m_mapData[m_bombManger[k].bombPoint.X - l][m_bombManger[k].bombPoint.Y].isRock && !(m_bombManger[k].bombPoint.X - l < 0))
 					{
-						m_mapData[BombManger[k].bombPoint.X - l][BombManger[k].bombPoint.Y].isBombFrame = false;
+						m_mapData[m_bombManger[k].bombPoint.X - l][m_bombManger[k].bombPoint.Y].isBombFrame = false;
 					}
-					if (!m_mapData[BombManger[k].bombPoint.X + l][BombManger[k].bombPoint.Y].isRock && !(BombManger[k].bombPoint.X + l > MAP_SIZE))
+					if (!m_mapData[m_bombManger[k].bombPoint.X + l][m_bombManger[k].bombPoint.Y].isRock && !(m_bombManger[k].bombPoint.X + l > MAP_SIZE))
 					{
-						m_mapData[BombManger[k].bombPoint.X + l][BombManger[k].bombPoint.Y].isBombFrame = false;
+						m_mapData[m_bombManger[k].bombPoint.X + l][m_bombManger[k].bombPoint.Y].isBombFrame = false;
 					}
-					if (!m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y - l].isRock && !(BombManger[k].bombPoint.Y - l < 0))
+					if (!m_mapData[m_bombManger[k].bombPoint.X][m_bombManger[k].bombPoint.Y - l].isRock && !(m_bombManger[k].bombPoint.Y - l < 0))
 					{
-						m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y - l].isBombFrame = false;
+						m_mapData[m_bombManger[k].bombPoint.X][m_bombManger[k].bombPoint.Y - l].isBombFrame = false;
 					}
-					if (!m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y + l].isRock && !(BombManger[k].bombPoint.Y + l > MAP_SIZE))
+					if (!m_mapData[m_bombManger[k].bombPoint.X][m_bombManger[k].bombPoint.Y + l].isRock && !(m_bombManger[k].bombPoint.Y + l > MAP_SIZE))
 					{
-						m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y + l].isBombFrame = false;
+						m_mapData[m_bombManger[k].bombPoint.X][m_bombManger[k].bombPoint.Y + l].isBombFrame = false;
 					}
-					m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y].isBombFrame = false;//ÆøÅºÀÌ ÀÖ´ø °÷
+					m_mapData[m_bombManger[k].bombPoint.X][m_bombManger[k].bombPoint.Y].isBombFrame = false;//ÆøÅºÀÌ ÀÖ´ø °÷
 
 				}
-				m_playerStatus[BombManger[k].playerID].bombCount++;
-				BombManger.erase(BombManger.begin() + k);
+				m_players[m_bombManger[k].playerID].playerBombCount++;
+				m_bombManger.erase(m_bombManger.begin() + k);
 				k--; n--;
 			}
 		}
 	}
-	for (int i = 0; i < m_nPlayer; i++) {
-		if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].isBombFrame) {
-			m_playerStatus[i].isAlive = false;
-			m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].playerColor = PlayerColor::PLAYEREMPTY;
+	for (int i = 0; i < MAX_PLAYER; i++) 
+	{
+		if (m_mapData[m_players[i].playerPosition.X][m_players[i].playerPosition.Y].isBombFrame) 
+		{
+			m_players[i].isAlive = false;
+			m_mapData[m_players[i].playerPosition.X][m_players[i].playerPosition.Y].playerColor = PlayerColor::PLAYEREMPTY;
 		}
 	}
 }
 
-void SceneData::setKeyInput(SOCKET socket, KeyInput key)
+void SceneData::SetKeyInput(SOCKET socket, KeyInput key)
 {
 	for (int i = 0; i < MAX_PLAYER; i++) 
 	{
-		if (m_playerStatus[i].playerSocket == socket)
+		if (m_players[i].playerSocket == socket)
 		{
-			m_playerStatus[i].key = key;
+			m_players[i].playerKeyInput = key;
 			break;
 		}
 	}
 }
 
-void SceneData::setPlayer(SOCKET socket)
+void SceneData::SetPlayer(SOCKET socket)
 {
-	m_playerStatus[m_nPlayer].playerSocket = socket;
-	m_playerStatus[m_nPlayer].isAlive = true;
-	m_playerStatus[m_nPlayer].position = { (m_nPlayer * 6) + 1, (m_nPlayer * 6)+1 };
-	m_playerStatus[m_nPlayer].bombCount = 1;
-	m_playerStatus[m_nPlayer].playerBombLength = 1;
-	m_playerStatus[m_nPlayer].playerColor = PlayerColor(m_nPlayer);
+	m_players[m_nPlayer].playerSocket = socket;
+	m_players[m_nPlayer].isAlive = true;
+	m_players[m_nPlayer].playerPosition = { (m_nPlayer * 6) + 1, (m_nPlayer * 6)+1 };
+	m_players[m_nPlayer].playerBombCount = 1;
+	m_players[m_nPlayer].playerBombLength = 1;
+	m_players[m_nPlayer].playerColor = PlayerColor(m_nPlayer);
 	++m_nPlayer;
 }
 
-void SceneData::getPlayer(SOCKET socket, PlayerStatus* playerStatus)
+void SceneData::GetPlayer(SOCKET socket, Player* playerStatus)
 {
 	for (int i = 0; i < MAX_PLAYER; i++)
 	{
-		if (m_playerStatus[i].playerSocket == socket)
+		if (m_players[i].playerSocket == socket)
 		{
-			*playerStatus = m_playerStatus[i];
+			*playerStatus = m_players[i];
 			break;
 		}
 	}

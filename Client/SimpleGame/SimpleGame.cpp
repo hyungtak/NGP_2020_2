@@ -12,7 +12,7 @@
 #include "GSELobby.h"
 #include "GSEGlobal.h"
 
-#define SERVERIP   "127.0.0.1"
+#define SERVERIP   "192.168.180.176"
 #define SERVERPORT 9000
 #define BUFSIZE    512
 
@@ -111,9 +111,6 @@ void SpecialKeyDownInput(int key, int x, int y)
         break;
     case GLUT_KEY_RIGHT:
         g_inputs.key_Right = true;
-        break;
-    case GLUT_KEY_F5:
-        g_inputs.key_F5 = true;
         break;
     }
 
