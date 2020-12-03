@@ -10,7 +10,6 @@
 
 #define MAX_PLAYER 3
 #define MAP_SIZE 30
-#define BOMB_EXPLOSION_COUNT 60
 
 #define SERVERPORT 9000
 #define BUFSIZE    512
@@ -62,7 +61,7 @@ enum PlayerColor
 
 struct PlayerStatus  //플레이어의 소켓, 물줄기, 이동속도, 위치, 상태를 저장
 {
-SOCKET					playerSocket;
+	SOCKET					playerSocket;
 	KeyInput				key;
 	int 					bombCount;				// 폭탄 개수
 	Point 					position;				// 플레이어 위치

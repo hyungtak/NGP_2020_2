@@ -96,11 +96,15 @@ void SceneData::update()
 			}
 			if (m_playerStatus[i].key.key_Space)				//ÆøÅº Ã³¸®
 			{
-				if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].isBomb == false)
+				if (m_playerStatus[i].bombCount > 0)
 				{
-					BombManger.emplace_back(m_playerStatus[i].position.X, m_playerStatus[i].position.Y, std::chrono::system_clock::now(), m_playerStatus[i].playerBombLength, i);
-					m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].isBomb = true;
-					m_playerStatus[i].bombCount--;				}
+					if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].isBomb == false)
+					{
+						BombManger.emplace_back(m_playerStatus[i].position.X, m_playerStatus[i].position.Y, std::chrono::system_clock::now(), m_playerStatus[i].playerBombLength, i);
+						m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].isBomb = true;
+						m_playerStatus[i].bombCount--;
+					}
+				}
 			}
 			m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].playerColor = PlayerColor(i);
 		}
