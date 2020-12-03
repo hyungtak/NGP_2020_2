@@ -111,12 +111,11 @@ void SceneData::update()
 		int n = BombManger.size();
 		for (int k = 0; k < n; k++)		//플레이어 길이로 처리하기
 		{
-			BombManger[k].bombCountdown--;
-
-			if (BombManger[k].bombCountdown <= BOMB_EXPLOSION_COUNT / 2 && BombManger[k].bombCountdown > 0)
+			if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - BombManger[k].bombCountdown) >= std::chrono::seconds(2)
+				&& std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - BombManger[k].bombCountdown) < std::chrono::seconds(5))
 			{
-				if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - BombManger[k].bombCountdown) >= std::chrono::seconds(2)
-					&& std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - BombManger[k].bombCountdown) < std::chrono::seconds(5))				{
+				for (int l = 1; l < BombManger[k].bombExplosionLength + 1; l++)
+				{
 					if (!m_mapData[BombManger[k].bombPoint.X - l][BombManger[k].bombPoint.Y].isRock && !(BombManger[k].bombPoint.X - l < 0) && BombManger[k].left)
 					{
 						m_mapData[BombManger[k].bombPoint.X - l][BombManger[k].bombPoint.Y].isBombFrame = true;
@@ -152,7 +151,11 @@ void SceneData::update()
 					m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y].isBombFrame = true;//폭탄이 있던 곳
 					m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y].isBomb = false;
 				}
-else if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - BombManger[k].bombCountdown) >= std::chrono::seconds(5))				{
+			}
+			else if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - BombManger[k].bombCountdown) >= std::chrono::seconds(5))
+			{
+				for (int l = 1; l < BombManger[k].bombExplosionLength + 1; l++)
+				{
 					if (!m_mapData[BombManger[k].bombPoint.X - l][BombManger[k].bombPoint.Y].isRock && !(BombManger[k].bombPoint.X - l < 0))
 					{
 						m_mapData[BombManger[k].bombPoint.X - l][BombManger[k].bombPoint.Y].isBombFrame = false;
@@ -203,7 +206,7 @@ void SceneData::setPlayer(SOCKET socket)
 	m_playerStatus[m_nPlayer].playerSocket = socket;
 	m_playerStatus[m_nPlayer].isAlive = true;
 	m_playerStatus[m_nPlayer].position = { (m_nPlayer * 6) + 1, (m_nPlayer * 6)+1 };
-	m_playerStatus[m_nPlayer].bombCount = 20;
+	m_playerStatus[m_nPlayer].bombCount = 1;
 	m_playerStatus[m_nPlayer].playerBombLength = 1;
 	m_playerStatus[m_nPlayer].playerColor = PlayerColor(m_nPlayer);
 	++m_nPlayer;

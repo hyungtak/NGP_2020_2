@@ -1,7 +1,5 @@
 #pragma comment(lib, "ws2_32")
 #include "SceneData.h"
-#include "Dependencies\glew.h"
-#include "Dependencies\freeglut.h"
 
 //SceneData ¸¸µé±â!
 SceneData gameSceneData;
@@ -187,29 +185,12 @@ DWORD WINAPI ProcessThread(LPVOID arg)
 
     return 0;
 }
-void update(int temp)
-{
-    int currentTime = glutGet(GLUT_ELAPSED_TIME);
-    int elapsedTime = currentTime - g_prevTimeInMillisecond;
-    g_prevTimeInMillisecond = currentTime;
-    float elapsedTimeInSec = (float)elapsedTime; // / 1000.0f;
-
-    std::cout << elapsedTimeInSec << std::endl;
-    gameSceneData.update();
-    glutTimerFunc(60,update, 60);
-}
 
 DWORD WINAPI GameThread(LPVOID arg)
 {
-    while (true) {
-        int currentTime = glutGet(GLUT_ELAPSED_TIME);
-        int elapsedTime = currentTime - g_prevTimeInMillisecond;
-        float elapsedTimeInSec = (float)elapsedTime; // / 1000.0f;
-        if (elapsedTimeInSec > 60) {
-            g_prevTimeInMillisecond = currentTime;
-            std::cout << elapsedTimeInSec << std::endl;
-            gameSceneData.update();
-        }
+    while (true)
+    {
+        gameSceneData.update();
     }
     return 0;
 }
