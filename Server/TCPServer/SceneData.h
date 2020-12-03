@@ -18,6 +18,5 @@ public:
 	void SetKeyInput(SOCKET socket, KeyInput key);
 	MapData GetMapData(int n, int m) { return m_mapData[n][m]; };
 	void SetPlayer(SOCKET socket);
-	void GetPlayer(SOCKET socket, Player* playerStatus);
 };
 

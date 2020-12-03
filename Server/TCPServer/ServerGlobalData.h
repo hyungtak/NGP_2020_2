@@ -10,9 +10,7 @@
 
 #define MAX_PLAYER 3
 #define MAP_SIZE 30
-
 #define SERVERPORT 9000
-#define BUFSIZE    512
 
 struct KeyInput //е╟ ют╥б on off
 {

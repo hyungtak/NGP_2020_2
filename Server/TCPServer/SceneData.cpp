@@ -128,8 +128,8 @@ void SceneData::Update()
 
 	if (!m_bombManger.empty())
 	{
-		int n = m_bombManger.size();
-		for (int k = 0; k < n; k++)		//플레이어 길이로 처리하기
+		int nbomb = m_bombManger.size();
+		for (int k = 0; k < nbomb; k++)		//플레이어 길이로 처리하기
 		{
 			if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - m_bombManger[k].bombCountdown) >= std::chrono::seconds(2)
 				&& std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - m_bombManger[k].bombCountdown) < std::chrono::seconds(3))
@@ -197,7 +197,7 @@ void SceneData::Update()
 				}
 				m_players[m_bombManger[k].playerID].playerBombCount++;
 				m_bombManger.erase(m_bombManger.begin() + k);
-				k--; n--;
+				k--; nbomb--;
 			}
 		}
 	}
@@ -232,16 +232,4 @@ void SceneData::SetPlayer(SOCKET socket)
 	m_players[m_nPlayer].playerBombLength = 1;
 	m_players[m_nPlayer].playerColor = PlayerColor(m_nPlayer);
 	++m_nPlayer;
-}
-
-void SceneData::GetPlayer(SOCKET socket, Player* playerStatus)
-{
-	for (int i = 0; i < MAX_PLAYER; i++)
-	{
-		if (m_players[i].playerSocket == socket)
-		{
-			*playerStatus = m_players[i];
-			break;
-		}
-	}
 }
