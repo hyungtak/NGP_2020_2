@@ -1,7 +1,6 @@
 #pragma comment(lib, "ws2_32")
 #include "SceneData.h"
 
-
 //SceneData 만들기!
 SceneData gameSceneData;
 HANDLE Event;
@@ -13,6 +12,7 @@ std::vector<SOCKET> MatchingQueue;
 
 DWORD WINAPI ProcessThread(LPVOID arg);
 
+bool startGame = false;
 
 // 소켓 함수 오류 출력 후 종료
 void err_quit(char *msg)
@@ -68,7 +68,7 @@ DWORD WINAPI LobbyThread(LPVOID arg)
     retval = listen(listen_sock, SOMAXCONN);
     if (retval == SOCKET_ERROR) err_quit("listen()");
 
-
+    bool playerReady = false;
     KeyInput Input{ 0 };
 
     // 데이터 통신에 사용할 변수
@@ -99,35 +99,27 @@ DWORD WINAPI LobbyThread(LPVOID arg)
 
         printf("MatchingQueue size : %d \n", MatchingQueue.size());
 
-
         if (MatchingQueue.size() == MAX_PLAYER)
         {
-            /////////////// 수정해야 함
-            //while (1)
-            //{
-            //    retval = recv(client_sock, (char*)&Input, sizeof(KeyInput), 0);    // char : 1byte
-            //    if (retval == SOCKET_ERROR) {
-            //        err_display("recv()");
-            //        break;
-            //    }
-            //    else if (retval == 0)
-            //        break;
-            //}
-
-            //if (gameSceneData.readyPlayer == MAX_PLAYER)
-            ///////////////
+            startGame = true;
+            
+            for (int i = 0; i < 3; ++i)
             {
-                for (int i = 0; i < 3; ++i)
-                {
-                    PThread = CreateThread(NULL, 0, ProcessThread, (LPVOID)MatchingQueue[i], 0, NULL);
-                    if (PThread == NULL) { closesocket(client_sock); }
-                    else { CloseHandle(PThread); }
-                }
+                retval = send(MatchingQueue[i], (char*)&startGame, sizeof(startGame), 0);
 
-                printf("Exit Lobby Thread()\n");
+                PThread = CreateThread(NULL, 0, ProcessThread, (LPVOID)MatchingQueue[i], 0, NULL);
+                if (PThread == NULL) { closesocket(client_sock); }
+            }
 
-                ExitThread(0);
+            printf("Exit Lobby Thread()\n");
 
+            ExitThread(0);
+        }
+        else
+        {
+            for (int i = 0; i < MatchingQueue.size(); ++i)
+            {
+                retval = send(MatchingQueue[i], (char*)&startGame, sizeof(startGame), 0);
             }
         }
     }
@@ -136,7 +128,6 @@ DWORD WINAPI LobbyThread(LPVOID arg)
 DWORD WINAPI ProcessThread(LPVOID arg)
 {
     printf("Running ProcessThread\n");
-
 
     SOCKET client_sock = (SOCKET)arg;
     SOCKADDR_IN clientaddr;
@@ -155,7 +146,6 @@ DWORD WINAPI ProcessThread(LPVOID arg)
     while (1) {
 
         retval = WaitForSingleObject(Event, INFINITE);
-        
 
         // 데이터 받기 (recv())
         retval = recv(client_sock, (char*)&Input, sizeof(KeyInput), 0);    // char : 1byte
@@ -166,23 +156,21 @@ DWORD WINAPI ProcessThread(LPVOID arg)
         else if (retval == 0)
             break;
 
-
-        //std::cout << Input.key_Down << " " << Input.key_Up << " " << Input.key_Right << " " << Input.key_Left << std::endl;
         gameSceneData.setKeyInput(client_sock, Input);
-    
 
         // 데이터 보내기 (send())
         PlayerStatus ps;
         gameSceneData.getPlayer(client_sock, &ps);
         Pos.X = ps.position.X;
         Pos.Y = ps.position.Y;
-         MapData md[MAP_SIZE][MAP_SIZE];
+        MapData md[MAP_SIZE][MAP_SIZE];
         
         for (int i = 0; i < MAP_SIZE; i++)
             for (int j = 0; j < MAP_SIZE; j++)
                md[i][j] = gameSceneData.getMapData(i, j);
         //std::cout << md[0][0].isBomb << std::endl;
-        retval = send(client_sock, (char*)&md, sizeof(md), 0);        if (retval == SOCKET_ERROR) 
+        retval = send(client_sock, (char*)&md, sizeof(md), 0);
+        if (retval == SOCKET_ERROR) 
         {
             err_display("XY send()");
             break;
@@ -190,16 +178,12 @@ DWORD WINAPI ProcessThread(LPVOID arg)
         SetEvent(Event);
     }
 
-    printf("[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n",
-        clientaddr.sin_addr, ntohs(clientaddr.sin_port));
-
+    printf("[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n", clientaddr.sin_addr, ntohs(clientaddr.sin_port));
 
     // 윈속 종료
     WSACleanup();
 
-
     return 0;
-
 }
 
 DWORD WINAPI GameThread(LPVOID arg)

@@ -154,11 +154,13 @@
   <ItemGroup>
     <ClInclude Include="GSEGame.h" />
     <ClInclude Include="GSEGlobal.h" />
+    <ClInclude Include="GSELobby.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GSEGame.cpp" />
+    <ClCompile Include="GSELobby.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="SimpleGame.cpp" />
     <ClCompile Include="stdafx.cpp">
