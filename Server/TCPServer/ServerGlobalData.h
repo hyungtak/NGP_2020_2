@@ -6,13 +6,14 @@
 #include <stdio.h>
 #include <iostream>
 #include <vector>
-
-#include "Protocol.h"
-
+#include <chrono>
 
 #define MAX_PLAYER 3
 #define MAP_SIZE 30
 #define BOMB_EXPLOSION_COUNT 60
+
+#define SERVERPORT 9000
+#define BUFSIZE    512
 
 struct KeyInput //키 입력 on off
 {
@@ -33,14 +34,14 @@ struct Point
 struct BombData		//폭탄 타이머 및 폭탄 위치값 저장용
 {
 	Point bombPoint;	//위치
-	int bombCountdown;		//타이머
+	std::chrono::system_clock::time_point bombCountdown;		//타이머
 	int bombExplosionLength;	//불꽃 길이
 	int playerID;
 	bool up = true;
 	bool down = true;
 	bool right = true;
 	bool left = true;
-	BombData(int px, int py, int count, int length, int id) { bombPoint.X = px; bombPoint.Y = py; bombCountdown = count; bombExplosionLength = length; playerID = id; }
+	BombData(int px, int py, std::chrono::system_clock::time_point count, int length, int id) { bombPoint.X = px; bombPoint.Y = py; bombCountdown = count; bombExplosionLength = length; playerID = id; }
 };
 
 enum Item
@@ -67,7 +68,6 @@ SOCKET					playerSocket;
 	Point 					position;				// 플레이어 위치
 	bool					isAlive;				// 생존 여부
 	int						playerBombLength;		//폭탄 불길 길이
-	std::vector<BombData>	playerBomb;				//플레이어 폭탄
 	PlayerColor				playerColor;
 	bool		isReady;	// 준비 여부
 };

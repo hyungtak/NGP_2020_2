@@ -98,28 +98,10 @@ void SceneData::update()
 			{
 				if (m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].isBomb == false)
 				{
-					if (m_playerStatus[i].bombCount > 0)
-					{
-						BombManger.emplace_back(m_playerStatus[i].position.X, m_playerStatus[i].position.Y, BOMB_EXPLOSION_COUNT, m_playerStatus[i].playerBombLength, i);
-						m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].isBomb = true;
-						m_playerStatus[i].bombCount--;
-					}
-				}
+					BombManger.emplace_back(m_playerStatus[i].position.X, m_playerStatus[i].position.Y, std::chrono::system_clock::now(), m_playerStatus[i].playerBombLength, i);
+					m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].isBomb = true;
+					m_playerStatus[i].bombCount--;				}
 			}
-			if (m_playerStatus[i].key.key_F5)
-			{
-				if (m_playerStatus[i].isReady == 0) {
-					m_playerStatus[i].isReady = 1;
-					readyPlayer++;
-				}
-				else {
-					m_playerStatus[i].isReady = 0;
-					readyPlayer--;
-				}
-				printf("readyPlayer : %d", readyPlayer);
-			}
-
-
 			m_mapData[m_playerStatus[i].position.X][m_playerStatus[i].position.Y].playerColor = PlayerColor(i);
 		}
 	}
@@ -133,8 +115,8 @@ void SceneData::update()
 
 			if (BombManger[k].bombCountdown <= BOMB_EXPLOSION_COUNT / 2 && BombManger[k].bombCountdown > 0)
 			{
-				for (int l = 1; l < BombManger[k].bombExplosionLength + 1; l++)
-				{
+				if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - BombManger[k].bombCountdown) >= std::chrono::seconds(2)
+					&& std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - BombManger[k].bombCountdown) < std::chrono::seconds(5))				{
 					if (!m_mapData[BombManger[k].bombPoint.X - l][BombManger[k].bombPoint.Y].isRock && !(BombManger[k].bombPoint.X - l < 0) && BombManger[k].left)
 					{
 						m_mapData[BombManger[k].bombPoint.X - l][BombManger[k].bombPoint.Y].isBombFrame = true;
@@ -170,11 +152,7 @@ void SceneData::update()
 					m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y].isBombFrame = true;//ÆøÅºÀÌ ÀÖ´ø °÷
 					m_mapData[BombManger[k].bombPoint.X][BombManger[k].bombPoint.Y].isBomb = false;
 				}
-			}
-			else if (BombManger[k].bombCountdown == 0)
-			{
-				for (int l = 1; l < BombManger[k].bombExplosionLength + 1; l++)
-				{
+else if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - BombManger[k].bombCountdown) >= std::chrono::seconds(5))				{
 					if (!m_mapData[BombManger[k].bombPoint.X - l][BombManger[k].bombPoint.Y].isRock && !(BombManger[k].bombPoint.X - l < 0))
 					{
 						m_mapData[BombManger[k].bombPoint.X - l][BombManger[k].bombPoint.Y].isBombFrame = false;
@@ -224,8 +202,8 @@ void SceneData::setPlayer(SOCKET socket)
 {
 	m_playerStatus[m_nPlayer].playerSocket = socket;
 	m_playerStatus[m_nPlayer].isAlive = true;
-	m_playerStatus[m_nPlayer].position = { (m_nPlayer * 5) + 1, (m_nPlayer * 5)+1 };
-	m_playerStatus[m_nPlayer].bombCount = 3;
+	m_playerStatus[m_nPlayer].position = { (m_nPlayer * 6) + 1, (m_nPlayer * 6)+1 };
+	m_playerStatus[m_nPlayer].bombCount = 20;
 	m_playerStatus[m_nPlayer].playerBombLength = 1;
 	m_playerStatus[m_nPlayer].playerColor = PlayerColor(m_nPlayer);
 	++m_nPlayer;
