@@ -184,7 +184,7 @@ void SceneData::setPlayer(SOCKET socket)
 {
 	m_playerStatus[m_nPlayer].playerSocket = socket;
 	m_playerStatus[m_nPlayer].isAlive = true;
-	m_playerStatus[m_nPlayer].position = { (m_nPlayer * 5) + 1, (m_nPlayer * 5)+1 };
+	m_playerStatus[m_nPlayer].position = { (m_nPlayer * 6) + 1, (m_nPlayer * 6)+1 };
 	m_playerStatus[m_nPlayer].bombCount = 20;
 	m_playerStatus[m_nPlayer].playerBombLength = 1;
 	m_playerStatus[m_nPlayer].playerColor = PlayerColor(m_nPlayer);
