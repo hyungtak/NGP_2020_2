@@ -93,6 +93,7 @@ void SceneData::setKeyInput(SOCKET socket, KeyInput key)
 
 void SceneData::setPlayer(SOCKET socket)
 {
+<<<<<<< Updated upstream
 	m_playerStatus[m_nPlayer].playerSocket = socket;
 	m_playerStatus[m_nPlayer].isAlive = true;
 	m_playerStatus[m_nPlayer].position = { m_nPlayer * 10, m_nPlayer * 10 };
@@ -113,3 +114,30 @@ void SceneData::getPlayer(SOCKET socket, PlayerStatus* playerStatus)
 		}
 	}
 }
+=======
+	m_players[m_nPlayer].playerSocket = socket;
+	m_players[m_nPlayer].isAlive = true;
+	m_players[m_nPlayer].playerPosition = { (m_nPlayer * 6) + 1, (m_nPlayer * 6)+1 };
+	m_players[m_nPlayer].playerBombCount = 1;
+	m_players[m_nPlayer].playerBombLength = 1;
+	m_players[m_nPlayer].playerColor = PlayerColor(m_nPlayer);
+	m_players[m_nPlayer].isReady = 0;
+	++m_nPlayer;
+}
+
+void SceneData::PressReady(int x)
+{
+	if (m_players[x].isReady == 0)
+		m_players[x].isReady = 1;
+	else
+		m_players[x].isReady = 0;
+
+	printf("Ready State = [%d, %d, %d]\n", m_players[0].isReady, m_players[1].isReady, m_players[2].isReady);
+
+	if ((m_players[0].isReady == 1) && (m_players[1].isReady == 1) || (m_players[2].isReady == 1))
+	{
+		isAllReady = 1;
+	}
+}
+
+>>>>>>> Stashed changes

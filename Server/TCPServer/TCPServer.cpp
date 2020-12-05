@@ -43,6 +43,8 @@ void err_display(char *msg)
 
 DWORD WINAPI LobbyThread(LPVOID arg)
 {
+    bool ready{ 0 };
+
     printf("Running LobbyThread\n");
     int retval;
 
@@ -99,6 +101,7 @@ DWORD WINAPI LobbyThread(LPVOID arg)
 
         printf("MatchingQueue size : %d \n", MatchingQueue.size());
 
+<<<<<<< Updated upstream
 
         if (MatchingQueue.size() == MAX_PLAYER)
         {
@@ -128,6 +131,43 @@ DWORD WINAPI LobbyThread(LPVOID arg)
 
                 ExitThread(0);
 
+=======
+        for (int i = 0; i < MatchingQueue.size(); ++i)
+        {
+            retval = recv(MatchingQueue[i], (char*)&ready, sizeof(Ready), 0);
+
+            if (ready)
+                gameSceneData.PressReady(i);
+
+            retval = send(MatchingQueue[i], (char*)&startGame, sizeof(startGame), 0);
+        }
+
+        if (MatchingQueue.size() == MAX_PLAYER)
+        {
+            if (gameSceneData.isAllReady == 1)
+            {
+                startGame = true;
+
+                for (int i = 0; i < MAX_PLAYER; ++i)
+                {
+                    retval = send(MatchingQueue[i], (char*)&startGame, sizeof(startGame), 0);
+
+
+                    PThread = CreateThread(NULL, 0, ProcessThread, (LPVOID)MatchingQueue[i], 0, NULL);
+                    if (PThread == NULL) { closesocket(client_sock); }
+                }
+
+                printf("Exit Lobby Thread()\n");
+
+                ExitThread(0);
+            }
+        }
+        else
+        {
+            for (int i = 0; i < MatchingQueue.size(); ++i)
+            {
+                retval = send(MatchingQueue[i], (char*)&startGame, sizeof(startGame), 0);
+>>>>>>> Stashed changes
             }
         }
     }

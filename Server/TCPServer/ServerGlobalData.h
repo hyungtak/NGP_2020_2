@@ -24,6 +24,11 @@ struct KeyInput //키 입력 on off
 	bool key_F5;
 };
 
+struct Ready
+{
+	bool Ready;
+};
+
 struct Point
 {
 	int X;
@@ -48,6 +53,7 @@ enum PlayerColor
 
 struct PlayerStatus  //플레이어의 소켓, 물줄기, 이동속도, 위치, 상태를 저장
 {
+<<<<<<< Updated upstream
 	SOCKET		playerSocket;
 	KeyInput	key;
 	char 		speed; //플레이어 속도
@@ -56,6 +62,18 @@ struct PlayerStatus  //플레이어의 소켓, 물줄기, 이동속도, 위치, 상태를 저장
 	bool		isAlive; // 생존 여부
 	PlayerColor playerColor;
 	bool		isReady;	// 준비 여부
+=======
+	SOCKET					playerSocket;
+	KeyInput				playerKeyInput;
+	Point 					playerPosition;			// 플레이어 위치
+	int						playerBombLength;		// 폭탄 불길 길이
+	int 					playerBombCount;		// 폭탄 개수
+	PlayerColor				playerColor;			// 클라에서 그리기위한 색상
+	bool					isAlive;				// 생존 여부
+
+	Ready					playerReady;
+	bool					isReady;				// 준비 여부
+>>>>>>> Stashed changes
 };
 
 struct MapData

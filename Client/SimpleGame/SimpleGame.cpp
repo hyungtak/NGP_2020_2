@@ -17,6 +17,12 @@
 
 GSEGame* g_game = NULL;
 KeyInput g_inputs;
+<<<<<<< Updated upstream
+=======
+bool ReadyState = false;
+bool gameStart = false;
+bool readyButtonClicked = false;
+>>>>>>> Stashed changes
 
 WSADATA wsa;
 SOCKET sock;
@@ -27,6 +33,14 @@ int g_prevTimeInMillisecond = 0;
 
 int recvn(SOCKET s, char* buf, int len, int flags);
 void err_display(char* msg);
+
+void LobbyScene(int temp)
+{
+        retval = send(sock, (char*)&ReadyState, sizeof(ReadyState), 0);
+
+
+        glutTimerFunc(60, LobbyScene, 0);
+}
 
 void RenderScene(int temp)
 {
@@ -55,6 +69,18 @@ void RenderScene(int temp)
     glutSwapBuffers();		//double buffering
 
     glutTimerFunc(60, RenderScene, 60);
+}
+void ReadyInput(unsigned char key, int x, int y)
+{
+    switch (key)
+    {
+    case GLUT_KEY_F5:
+        if (ReadyState = FALSE)
+            ReadyState = TRUE;
+        else
+            ReadyState = TRUE;
+        break;
+    }
 }
 
 void KeyDownInput(unsigned char key, int x, int y)
@@ -214,6 +240,7 @@ int main(int argc, char* argv[])
     g_game = new GSEGame();
     memset(&g_inputs, 0, sizeof(KeyInput));
 
+    glutKeyboardFunc(ReadyInput);
     glutDisplayFunc(Idle);
     glutIdleFunc(Idle);
     glutMouseFunc(MouseInput);
@@ -224,7 +251,11 @@ int main(int argc, char* argv[])
 
     g_prevTimeInMillisecond = glutGet(GLUT_ELAPSED_TIME);
 
-    glutTimerFunc(60, RenderScene, 60);
+    if (gameStart = FALSE)
+        glutTimerFunc(60, LobbyScene, 0);
+
+    if (gameStart = TRUE)
+        glutTimerFunc(60, RenderScene, 60);
 
     glutMainLoop();
 
