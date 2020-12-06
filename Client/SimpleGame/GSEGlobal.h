@@ -40,3 +40,17 @@ struct KeyInput //е╟ ют╥б on off
 	bool key_Right;
 	bool key_Space;
 };
+
+enum Winner
+{
+	Winner_RED,
+	Winner_GREEN,
+	Winner_BLUE,
+	Winner_DRAW,
+};
+
+struct FinishGame
+{
+	bool			FinishGame;
+	Winner			Winner;
+};

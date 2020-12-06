@@ -94,15 +94,20 @@ DWORD WINAPI LobbyThread(LPVOID arg)
         printf("\n[TCP 서버] 클라이언트 접속: IP 주소=%s, 포트 번호=%d\n",
             ip_addr, ntohs(clientaddr.sin_port));
         //플레이어 연결됐으니 씬데이터에 플레이어 만들어주기
-        gameSceneData.SetPlayer(client_sock);
+        //gameSceneData.SetPlayer(client_sock);
 
         printf("MatchingQueue size : %d \n", MatchingQueue.size());
 
         if (MatchingQueue.size() == MAX_PLAYER)
         {
             startGame = true;
+
+            for (int i = 0; i < MAX_PLAYER; ++i)
+            {
+                gameSceneData.SetPlayer(MatchingQueue[i]);
+            }
             
-            for (int i = 0; i < 3; ++i)
+            for (int i = 0; i < MAX_PLAYER; ++i)
             {
                 retval = send(MatchingQueue[i], (char*)&startGame, sizeof(startGame), 0);
 
@@ -160,16 +165,26 @@ DWORD WINAPI ProcessThread(LPVOID arg)
         // 데이터 보내기 (send())
 
         MapData md[MAP_SIZE][MAP_SIZE];
-        
+        FinishGame fg = gameSceneData.GetGameFinish();
+
         for (int i = 0; i < MAP_SIZE; i++)
             for (int j = 0; j < MAP_SIZE; j++)
                md[i][j] = gameSceneData.GetMapData(i, j);
-        retval = send(client_sock, (char*)&md, sizeof(md), 0);
-        if (retval == SOCKET_ERROR) 
+
+        retval = send(client_sock, (char*)&md, sizeof(MapData), 0);
+        if (retval == SOCKET_ERROR)
         {
             err_display("XY send()");
             break;
         }
+
+        retval = send(client_sock, (char*)&fg, sizeof(FinishGame), 0);
+        if (retval == SOCKET_ERROR) 
+        {
+            err_display("Finish send()");
+            break;
+        }
+
         SetEvent(Event);
     }
 
@@ -207,6 +222,7 @@ int main(int argc, char *argv[])
     while (1)
     {
         printf("Running main \n");
+        printf("startgame: %d\n", startGame);
         Sleep(10000);
     }
 }

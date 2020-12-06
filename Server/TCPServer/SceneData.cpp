@@ -209,6 +209,38 @@ void SceneData::Update()
 			m_mapData[m_players[i].playerPosition.X][m_players[i].playerPosition.Y].playerColor = PlayerColor::PLAYEREMPTY;
 		}
 	}
+
+
+	if (m_players[0].isAlive == 1 && m_players[1].isAlive == 0 && m_players[2].isAlive == 0)
+	{
+		finishgame.FinishGame = 1;
+		finishgame.Winner = Winner(0);
+		printf("Winner is RED\n");
+		//Sleep(10000);
+	}
+	if (m_players[0].isAlive == 0 && m_players[1].isAlive == 1 && m_players[2].isAlive == 0)
+	{
+		finishgame.FinishGame = 1;
+		finishgame.Winner = Winner(1);
+		printf("Winner is GREEN\n");
+		Sleep(10000);
+	}
+	if (m_players[0].isAlive == 0 && m_players[1].isAlive == 0 && m_players[2].isAlive == 1)
+	{
+		finishgame.FinishGame = 1;
+		finishgame.Winner = Winner(2);
+		printf("Winner is BLUE\n");
+		Sleep(10000);
+	}
+
+	//버그발생
+	//if (m_players[1].isAlive == 0 && m_players[2].isAlive == 0 && m_players[2].isAlive == 0)
+	//{
+	//	finishgame.FinishGame = 1;
+	//	finishgame.Winner = Winner(4);
+	//	printf("Draw!!\n");
+	//}
+
 }
 
 void SceneData::SetKeyInput(SOCKET socket, KeyInput key)

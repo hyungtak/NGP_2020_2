@@ -12,7 +12,7 @@
 #include "GSELobby.h"
 #include "GSEGlobal.h"
 
-#define SERVERIP   "192.168.180.176"
+#define SERVERIP   "127.0.0.1"
 #define SERVERPORT 9000
 #define BUFSIZE    512
 
@@ -51,9 +51,26 @@ void RenderScene(int temp)
 
         //RecvFromServer()
         MapData mapData[MAP_SIZE][MAP_SIZE];
+        FinishGame fg;
+
         retval = recvn(sock, reinterpret_cast<char*>(&mapData), sizeof(mapData), 0);
         if (retval == SOCKET_ERROR) {
             err_display("MapData recv()");
+        }
+
+        retval = recvn(sock, reinterpret_cast<char*>(&fg), sizeof(fg), 0);
+        if (retval == SOCKET_ERROR) {
+            err_display("FinishGame recv()");
+        }
+
+        if (fg.FinishGame == 1)
+        {
+            if (fg.Winner == 0)
+                printf("Winner is RED\n");
+            if (fg.Winner == 1)
+                printf("Winner is GREEN\n");
+            if (fg.Winner == 2)
+                printf("Winner is BLUE\n");
         }
 
         g_game->SetMapData(mapData);
