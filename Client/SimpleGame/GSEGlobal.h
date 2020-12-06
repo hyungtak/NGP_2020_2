@@ -41,6 +41,8 @@ struct KeyInput //е╟ ют╥б on off
 	bool key_Space;
 };
 
+
+////////////////////
 enum Winner
 {
 	Winner_RED,

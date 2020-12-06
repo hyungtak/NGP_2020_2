@@ -77,6 +77,7 @@ void RenderScene(int temp)
 
         g_game->RendererScene();
     }
+
     else
     {
         g_lobby->RendererScene();
@@ -86,6 +87,8 @@ void RenderScene(int temp)
         if (retval == SOCKET_ERROR) {
             err_display("gameStart recv()");
         }
+
+        printf("gamestart: %d\n", gameStart);
     }
 
     glutSwapBuffers();		//double buffering

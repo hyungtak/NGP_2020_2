@@ -211,6 +211,7 @@ void SceneData::Update()
 	}
 
 
+	finishgame.FinishGame = 0;
 	if (m_players[0].isAlive == 1 && m_players[1].isAlive == 0 && m_players[2].isAlive == 0)
 	{
 		finishgame.FinishGame = 1;
@@ -223,14 +224,14 @@ void SceneData::Update()
 		finishgame.FinishGame = 1;
 		finishgame.Winner = Winner(1);
 		printf("Winner is GREEN\n");
-		Sleep(10000);
+		//Sleep(10000);
 	}
 	if (m_players[0].isAlive == 0 && m_players[1].isAlive == 0 && m_players[2].isAlive == 1)
 	{
 		finishgame.FinishGame = 1;
 		finishgame.Winner = Winner(2);
 		printf("Winner is BLUE\n");
-		Sleep(10000);
+		//Sleep(10000);
 	}
 
 	//버그발생

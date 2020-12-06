@@ -171,14 +171,14 @@ DWORD WINAPI ProcessThread(LPVOID arg)
             for (int j = 0; j < MAP_SIZE; j++)
                md[i][j] = gameSceneData.GetMapData(i, j);
 
-        retval = send(client_sock, (char*)&md, sizeof(MapData), 0);
+        retval = send(client_sock, (char*)&md, sizeof(md), 0);
         if (retval == SOCKET_ERROR)
         {
             err_display("XY send()");
             break;
         }
 
-        retval = send(client_sock, (char*)&fg, sizeof(FinishGame), 0);
+        retval = send(client_sock, (char*)&fg, sizeof(fg), 0);
         if (retval == SOCKET_ERROR) 
         {
             err_display("Finish send()");
