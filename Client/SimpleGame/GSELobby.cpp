@@ -25,7 +25,7 @@ void GSELobby::RendererScene(int num)
 	DrawE(410.0f, 480.0f);
 	DrawR(490.0f, 480.0f);
 
-	DrawC(90.0f, 360.0f);
+	DrawC( 90.0f, 360.0f);
 	DrawO(190.0f, 360.0f);
 	DrawL(280.0f, 360.0f);
 	DrawO(350.0f, 360.0f);

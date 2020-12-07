@@ -10,6 +10,7 @@
 #include "Dependencies\freeglut.h"
 #include "GSEGame.h"
 #include "GSELobby.h"
+#include "GSEFinishScene.h"
 #include "GSEGlobal.h"
 
 #define SERVERIP   "127.0.0.1"
@@ -18,6 +19,7 @@
 
 GSEGame* g_game = NULL;
 GSELobby* g_lobby = NULL;
+GSEFinishScene* g_finishscene = NULL;
 KeyInput g_inputs;
 int playerNum = 0;
 bool readyButtonClicked = false;
@@ -69,6 +71,7 @@ void RenderScene(int temp)
         }
 
         g_lobby->RendererScene(playerNum);
+       
     }
 
     glutSwapBuffers();		//double buffering
@@ -237,6 +240,7 @@ int main(int argc, char* argv[])
 
     g_game = new GSEGame();
     g_lobby = new GSELobby();
+    g_finishscene = new GSEFinishScene();
     memset(&g_inputs, 0, sizeof(KeyInput));
 
     glutDisplayFunc(Idle);

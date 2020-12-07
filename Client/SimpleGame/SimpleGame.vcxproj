@@ -152,6 +152,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="GSEFinishScene.h" />
     <ClInclude Include="GSEGame.h" />
     <ClInclude Include="GSEGlobal.h" />
     <ClInclude Include="GSELobby.h" />
@@ -159,6 +160,7 @@
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GSEFinishScene.cpp" />
     <ClCompile Include="GSEGame.cpp" />
     <ClCompile Include="GSELobby.cpp" />
     <ClCompile Include="Renderer.cpp" />

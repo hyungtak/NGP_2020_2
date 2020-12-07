@@ -67,7 +67,6 @@ DWORD WINAPI LobbyThread(LPVOID arg)
     retval = listen(listen_sock, SOMAXCONN);
     if (retval == SOCKET_ERROR) err_quit("listen()");
 
-    bool playerReady = false;
     KeyInput Input{ 0 };
 
     // 데이터 통신에 사용할 변수
