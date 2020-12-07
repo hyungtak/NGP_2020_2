@@ -12,14 +12,14 @@
 #include "GSELobby.h"
 #include "GSEGlobal.h"
 
-#define SERVERIP   "192.168.180.176"
+#define SERVERIP   "127.0.0.1"
 #define SERVERPORT 9000
 #define BUFSIZE    512
 
 GSEGame* g_game = NULL;
 GSELobby* g_lobby = NULL;
 KeyInput g_inputs;
-bool gameStart = false;
+int playerNum = 0;
 bool readyButtonClicked = false;
 
 WSADATA wsa;
@@ -41,7 +41,7 @@ void RenderScene(int temp)
 
     std::cout << elapsedTimeInSec << std::endl;
 
-    if (gameStart) 
+    if (playerNum == 3)
     {
         //SendToServer()
         retval = send(sock, (const char*)(&g_inputs), sizeof(g_inputs), 0);
@@ -62,13 +62,13 @@ void RenderScene(int temp)
     }
     else
     {
-        g_lobby->RendererScene();
-
         //RecvFromServer()
-        retval = recvn(sock, reinterpret_cast<char*>(&gameStart), sizeof(gameStart), 0);
+        retval = recvn(sock, reinterpret_cast<char*>(&playerNum), sizeof(playerNum), 0);
         if (retval == SOCKET_ERROR) {
             err_display("gameStart recv()");
         }
+
+        g_lobby->RendererScene(playerNum);
     }
 
     glutSwapBuffers();		//double buffering

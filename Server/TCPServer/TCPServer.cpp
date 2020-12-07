@@ -11,7 +11,7 @@ std::vector<SOCKET> MatchingQueue;
 
 DWORD WINAPI ProcessThread(LPVOID arg);
 
-bool startGame = false;
+int startGame = 0;
 
 // 소켓 함수 오류 출력 후 종료
 void err_quit(char *msg)
@@ -98,10 +98,10 @@ DWORD WINAPI LobbyThread(LPVOID arg)
 
         printf("MatchingQueue size : %d \n", MatchingQueue.size());
 
+        startGame = MatchingQueue.size();
+
         if (MatchingQueue.size() == MAX_PLAYER)
         {
-            startGame = true;
-            
             for (int i = 0; i < 3; ++i)
             {
                 retval = send(MatchingQueue[i], (char*)&startGame, sizeof(startGame), 0);
