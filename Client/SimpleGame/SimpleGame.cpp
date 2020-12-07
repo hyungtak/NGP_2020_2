@@ -71,6 +71,8 @@ void RenderScene(int temp)
                 printf("Winner is GREEN\n");
             if (fg.Winner == 2)
                 printf("Winner is BLUE\n");
+            if (fg.Winner == 3)
+                printf("DRAW!!\n");
         }
 
         g_game->SetMapData(mapData);

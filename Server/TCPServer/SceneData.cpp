@@ -212,36 +212,39 @@ void SceneData::Update()
 
 
 	finishgame.FinishGame = 0;
-	if (m_players[0].isAlive == 1 && m_players[1].isAlive == 0 && m_players[2].isAlive == 0)
+	
+	if (startgame == 1)
 	{
-		finishgame.FinishGame = 1;
-		finishgame.Winner = Winner(0);
-		printf("Winner is RED\n");
-		//Sleep(10000);
+		if (m_players[0].isAlive == 1 && m_players[1].isAlive == 0 && m_players[2].isAlive == 0)
+		{
+			finishgame.FinishGame = 1;
+			finishgame.Winner = Winner(0);
+			printf("Winner is RED\n");
+			//Sleep(10000);
+		}
+		if (m_players[0].isAlive == 0 && m_players[1].isAlive == 1 && m_players[2].isAlive == 0)
+		{
+			finishgame.FinishGame = 1;
+			finishgame.Winner = Winner(1);
+			printf("Winner is GREEN\n");
+			//Sleep(10000);
+		}
+		if (m_players[0].isAlive == 0 && m_players[1].isAlive == 0 && m_players[2].isAlive == 1)
+		{
+			finishgame.FinishGame = 1;
+			finishgame.Winner = Winner(2);
+			printf("Winner is BLUE\n");
+			//Sleep(10000);
+		}
+		}
+		if (m_players[0].isAlive == 0 && m_players[1].isAlive == 0 && m_players[2].isAlive == 0)
+		{
+			finishgame.FinishGame = 1;
+			finishgame.Winner = Winner(3);
+			printf("Draw!!\n");
+			//Sleep(10000);
+		}
 	}
-	if (m_players[0].isAlive == 0 && m_players[1].isAlive == 1 && m_players[2].isAlive == 0)
-	{
-		finishgame.FinishGame = 1;
-		finishgame.Winner = Winner(1);
-		printf("Winner is GREEN\n");
-		//Sleep(10000);
-	}
-	if (m_players[0].isAlive == 0 && m_players[1].isAlive == 0 && m_players[2].isAlive == 1)
-	{
-		finishgame.FinishGame = 1;
-		finishgame.Winner = Winner(2);
-		printf("Winner is BLUE\n");
-		//Sleep(10000);
-	}
-
-	//버그발생
-	//if (m_players[1].isAlive == 0 && m_players[2].isAlive == 0 && m_players[2].isAlive == 0)
-	//{
-	//	finishgame.FinishGame = 1;
-	//	finishgame.Winner = Winner(4);
-	//	printf("Draw!!\n");
-	//}
-
 }
 
 void SceneData::SetKeyInput(SOCKET socket, KeyInput key)
@@ -266,3 +269,4 @@ void SceneData::SetPlayer(SOCKET socket)
 	m_players[m_nPlayer].playerColor = PlayerColor(m_nPlayer);
 	++m_nPlayer;
 }
+

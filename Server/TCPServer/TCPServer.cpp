@@ -132,6 +132,7 @@ DWORD WINAPI LobbyThread(LPVOID arg)
 DWORD WINAPI ProcessThread(LPVOID arg)
 {
     printf("Running ProcessThread\n");
+    gameSceneData.StartGame();
 
     SOCKET client_sock = (SOCKET)arg;
     SOCKADDR_IN clientaddr;

@@ -14,6 +14,7 @@ private:
 	std::vector<BombData>	m_bombManger;
 	MapData					m_mapData[MAP_SIZE][MAP_SIZE];
 	FinishGame				finishgame;
+	bool					startgame;
 
 public:
 	void Update();
@@ -21,5 +22,6 @@ public:
 	MapData GetMapData(int n, int m) { return m_mapData[n][m]; };
 	void SetPlayer(SOCKET socket);
 	FinishGame GetGameFinish() { return finishgame; };
+	void StartGame() { startgame = 1; };
 };
 
