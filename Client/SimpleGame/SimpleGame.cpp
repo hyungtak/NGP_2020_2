@@ -22,12 +22,12 @@ GSELobby* g_lobby = NULL;
 GSEFinishScene* g_finishscene = NULL;
 KeyInput g_inputs;
 int playerNum = 0;
-
+FinishGame fg;
 WSADATA wsa;
 SOCKET sock;
 SOCKADDR_IN serveraddr;
 int retval;
-
+bool isPlay= true;
 int g_prevTimeInMillisecond = 0;
 
 int recvn(SOCKET s, char* buf, int len, int flags);
@@ -42,48 +42,53 @@ void RenderScene(int temp)
 
     std::cout << elapsedTimeInSec << std::endl;
 
-    if (playerNum == 3)
+    if (!isPlay)
     {
-        //SendToServer()
-        retval = send(sock, (const char*)(&g_inputs), sizeof(g_inputs), 0);
-        if (retval == SOCKET_ERROR) {
-            err_display("GameScene send()");
-        }
-
-        //RecvFromServer()
-        MapData mapData[MAP_SIZE][MAP_SIZE];
-        FinishGame fg;
-
-        retval = recvn(sock, reinterpret_cast<char*>(&mapData), sizeof(mapData), 0);
-        if (retval == SOCKET_ERROR) {
-            err_display("MapData recv()");
-        }
-
-        retval = recvn(sock, reinterpret_cast<char*>(&fg), sizeof(fg), 0);
-        if (retval == SOCKET_ERROR) {
-            err_display("FinishGame recv()");
-        }
-
-        g_game->SetMapData(mapData);
-
-        g_game->RendererScene();
-
-        if (fg.FinishGame == 1)
+        g_finishscene->RendererScene(fg.Winner);
+    }
+    else if (isPlay)
+    {
+        if (playerNum == 3)
         {
-            g_finishscene->RendererScene(fg.Winner);
+            //SendToServer()
+            retval = send(sock, (const char*)(&g_inputs), sizeof(g_inputs), 0);
+            if (retval == SOCKET_ERROR) {
+                err_display("GameScene send()");
+            }
+
+            //RecvFromServer()
+            MapData mapData[MAP_SIZE][MAP_SIZE];
+
+            retval = recvn(sock, reinterpret_cast<char*>(&mapData), sizeof(mapData), 0);
+            if (retval == SOCKET_ERROR) {
+                err_display("MapData recv()");
+            }
+
+            retval = recvn(sock, reinterpret_cast<char*>(&fg), sizeof(fg), 0);
+            if (retval == SOCKET_ERROR) {
+                err_display("FinishGame recv()");
+            }
+
+            g_game->SetMapData(mapData);
+
+            g_game->RendererScene();
+
+            if (fg.FinishGame == 1)
+            {
+                isPlay = false;
+            }
+        }
+
+        else
+        {
+            //RecvFromServer()
+            retval = recvn(sock, reinterpret_cast<char*>(&playerNum), sizeof(playerNum), 0);
+            if (retval == SOCKET_ERROR) {
+                err_display("gameStart recv()");
+            }
+            g_lobby->RendererScene(playerNum);
         }
     }
-
-    else
-    {
-        //RecvFromServer()
-        retval = recvn(sock, reinterpret_cast<char*>(&playerNum), sizeof(playerNum), 0);
-        if (retval == SOCKET_ERROR) {
-            err_display("gameStart recv()");
-        }
-        g_lobby->RendererScene(playerNum);   
-    }
-
     glutSwapBuffers();		//double buffering
 
     glutTimerFunc(60, RenderScene, 60);

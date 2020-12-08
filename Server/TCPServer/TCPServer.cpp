@@ -185,7 +185,6 @@ DWORD WINAPI ProcessThread(LPVOID arg)
         SetEvent(Event);
     }
 
-    printf("[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n", clientaddr.sin_addr, ntohs(clientaddr.sin_port));
 
     // 윈속 종료
     WSACleanup();
