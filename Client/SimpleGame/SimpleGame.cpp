@@ -10,6 +10,7 @@
 #include "Dependencies\freeglut.h"
 #include "GSEGame.h"
 #include "GSELobby.h"
+#include "GSEFinishScene.h"
 #include "GSEGlobal.h"
 
 #define SERVERIP   "127.0.0.1"
@@ -18,9 +19,9 @@
 
 GSEGame* g_game = NULL;
 GSELobby* g_lobby = NULL;
+GSEFinishScene* g_finishscene = NULL;
 KeyInput g_inputs;
-bool gameStart = false;
-bool readyButtonClicked = false;
+int playerNum = 0;
 
 WSADATA wsa;
 SOCKET sock;
@@ -41,7 +42,7 @@ void RenderScene(int temp)
 
     std::cout << elapsedTimeInSec << std::endl;
 
-    if (gameStart) 
+    if (playerNum == 3)
     {
         //SendToServer()
         retval = send(sock, (const char*)(&g_inputs), sizeof(g_inputs), 0);
@@ -63,34 +64,24 @@ void RenderScene(int temp)
             err_display("FinishGame recv()");
         }
 
-        if (fg.FinishGame == 1)
-        {
-            if (fg.Winner == 0)
-                printf("Winner is RED\n");
-            if (fg.Winner == 1)
-                printf("Winner is GREEN\n");
-            if (fg.Winner == 2)
-                printf("Winner is BLUE\n");
-            if (fg.Winner == 3)
-                printf("DRAW!!\n");
-        }
-
         g_game->SetMapData(mapData);
 
         g_game->RendererScene();
+
+        if (fg.FinishGame == 1)
+        {
+            g_finishscene->RendererScene(fg.Winner);
+        }
     }
 
     else
     {
-        g_lobby->RendererScene();
-
         //RecvFromServer()
-        retval = recvn(sock, reinterpret_cast<char*>(&gameStart), sizeof(gameStart), 0);
+        retval = recvn(sock, reinterpret_cast<char*>(&playerNum), sizeof(playerNum), 0);
         if (retval == SOCKET_ERROR) {
             err_display("gameStart recv()");
         }
-
-        printf("gamestart: %d\n", gameStart);
+        g_lobby->RendererScene(playerNum);   
     }
 
     glutSwapBuffers();		//double buffering
@@ -159,18 +150,6 @@ void SpecialKeyUpInput(int key, int x, int y)
 
 void Idle(void)
 {
-}
-
-void MouseInput(int button, int state, int x, int y)
-{
-    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
-    {
-        if (((x / (GSE_WINDOW_WIDTH / 2.0f) - 1.0f) > -0.85f && (x / (GSE_WINDOW_WIDTH / 2.0f) - 1.0f) < -0.45f)
-            && ((y / (GSE_WINDOW_WIDTH / 2.0f) - 1.0f) > -0.85f && (y / (GSE_WINDOW_WIDTH / 2.0f) - 1.0f) < -0.45f))
-        {
-            readyButtonClicked = true;
-        }
-    }
 }
 
 // 소켓 함수 오류 출력 후 종료
@@ -259,11 +238,11 @@ int main(int argc, char* argv[])
 
     g_game = new GSEGame();
     g_lobby = new GSELobby();
+    g_finishscene = new GSEFinishScene();
     memset(&g_inputs, 0, sizeof(KeyInput));
 
     glutDisplayFunc(Idle);
     glutIdleFunc(Idle);
-    glutMouseFunc(MouseInput);
     glutKeyboardFunc(KeyDownInput);
     glutKeyboardUpFunc(KeyUpInput);
     glutSpecialFunc(SpecialKeyDownInput);

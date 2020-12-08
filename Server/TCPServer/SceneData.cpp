@@ -32,7 +32,7 @@ SceneData::~SceneData()
 
 void SceneData::Update()	
 {
-	for (int i = 0; i < MAX_PLAYER; i++) //변경해야함
+	for (int i = 0; i < MAX_PLAYER; i++) 
 	{
 		if (m_players[i].isAlive)
 		{
@@ -236,7 +236,6 @@ void SceneData::Update()
 			printf("Winner is BLUE\n");
 			//Sleep(10000);
 		}
-		}
 		if (m_players[0].isAlive == 0 && m_players[1].isAlive == 0 && m_players[2].isAlive == 0)
 		{
 			finishgame.FinishGame = 1;
@@ -263,7 +262,7 @@ void SceneData::SetPlayer(SOCKET socket)
 {
 	m_players[m_nPlayer].playerSocket = socket;
 	m_players[m_nPlayer].isAlive = true;
-	m_players[m_nPlayer].playerPosition = { (m_nPlayer * 6) + 1, (m_nPlayer * 6)+1 };
+	m_players[m_nPlayer].playerPosition = { (m_nPlayer * 6) + 1, (m_nPlayer * 6) + 1 };
 	m_players[m_nPlayer].playerBombCount = 1;
 	m_players[m_nPlayer].playerBombLength = 1;
 	m_players[m_nPlayer].playerColor = PlayerColor(m_nPlayer);
