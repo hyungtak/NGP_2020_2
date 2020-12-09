@@ -17,6 +17,7 @@ private:
 	bool					startgame;
 
 public:
+	std::vector<SOCKET> MatchingQueue;
 	void Update();
 	void SetKeyInput(SOCKET socket, KeyInput key);
 	MapData GetMapData(int n, int m) { return m_mapData[n][m]; };

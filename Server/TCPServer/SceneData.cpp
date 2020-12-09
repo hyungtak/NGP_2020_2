@@ -220,6 +220,7 @@ void SceneData::Update()
 			finishgame.FinishGame = 1;
 			finishgame.Winner = Winner(0);
 			printf("Winner is RED\n");
+			ExitThread(0);
 			//Sleep(10000);
 		}
 		if (m_players[0].isAlive == 0 && m_players[1].isAlive == 1 && m_players[2].isAlive == 0)
@@ -227,6 +228,7 @@ void SceneData::Update()
 			finishgame.FinishGame = 1;
 			finishgame.Winner = Winner(1);
 			printf("Winner is GREEN\n");
+			ExitThread(0);
 			//Sleep(10000);
 		}
 		if (m_players[0].isAlive == 0 && m_players[1].isAlive == 0 && m_players[2].isAlive == 1)
@@ -234,6 +236,7 @@ void SceneData::Update()
 			finishgame.FinishGame = 1;
 			finishgame.Winner = Winner(2);
 			printf("Winner is BLUE\n");
+			ExitThread(0);
 			//Sleep(10000);
 		}
 		if (m_players[0].isAlive == 0 && m_players[1].isAlive == 0 && m_players[2].isAlive == 0)
@@ -241,6 +244,7 @@ void SceneData::Update()
 			finishgame.FinishGame = 1;
 			finishgame.Winner = Winner(3);
 			printf("Draw!!\n");
+			ExitThread(0);
 			//Sleep(10000);
 		}
 	}
