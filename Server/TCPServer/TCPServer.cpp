@@ -6,12 +6,7 @@ SceneData gameSceneData;
 HANDLE Event;
 HANDLE PThread, GThread, LThread;
 
-FinishGame finishFlag;
-
 DWORD WINAPI ProcessThread(LPVOID arg);
-
-
-
 
 // 소켓 함수 오류 출력 후 종료
 void err_quit(char *msg)
@@ -131,7 +126,7 @@ DWORD WINAPI ProcessThread(LPVOID arg)
     Point Bomb = Pos;
     KeyInput Input{ 0 };
     int addrlen;
-
+    FinishGame finishFlag = gameSceneData.GetGameFinish();
     // 클라이언트 정보 얻기
     addrlen = sizeof(clientaddr);
     getpeername(client_sock, (SOCKADDR*)&clientaddr, &addrlen);
@@ -140,7 +135,9 @@ DWORD WINAPI ProcessThread(LPVOID arg)
     while (1) {
 
         retval = WaitForSingleObject(Event, INFINITE);
-
+        if (finishFlag.FinishGame)
+            break;
+        finishFlag = gameSceneData.GetGameFinish();
         // 데이터 받기 (recv())
         retval = recv(client_sock, (char*)&Input, sizeof(KeyInput), 0);  
         if (retval == SOCKET_ERROR) {
@@ -155,7 +152,6 @@ DWORD WINAPI ProcessThread(LPVOID arg)
         // 데이터 보내기 (send())
 
         MapData gameMapData[MAP_SIZE][MAP_SIZE];
-        finishFlag = gameSceneData.GetGameFinish();
 
         for (int i = 0; i < MAP_SIZE; i++)
             for (int j = 0; j < MAP_SIZE; j++)
@@ -191,6 +187,12 @@ DWORD WINAPI GameThread(LPVOID arg)
     while (true)
     {
         gameSceneData.Update();
+        if (gameSceneData.GetGameFinish().FinishGame == 1)
+        {
+
+            printf("FinishGame: 1, ExitGameThread()\n");
+            break;
+        }
     }
     return 0;
 }
@@ -215,10 +217,11 @@ int main(int argc, char *argv[])
         printf("startgame: %d\n", gameSceneData.MatchingQueue.size());
         Sleep(10000);
 
-        if (finishFlag.FinishGame == 1)
+        if (gameSceneData.GetGameFinish().FinishGame == 1)
         {
+            Sleep(5000);
             printf("FinishGame: 1, ExitMain()\n");
-            return false;
+            break;
         }
     }
 }
