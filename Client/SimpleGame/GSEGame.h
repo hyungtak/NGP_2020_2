@@ -9,6 +9,7 @@ public:
 	GSEGame();
 	~GSEGame();
 
+	void Update(float elapsedTimeInSec, KeyInput* inputs);
 	void RendererScene();
 
 	void SetMapData(MapData(*map_data)[MAP_SIZE]);

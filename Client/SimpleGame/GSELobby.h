@@ -9,10 +9,9 @@ public:
 	GSELobby();
 	~GSELobby();
 
-	void RendererScene(int num);
-	
+	void RendererScene();
+
 private:
-	int playerNumSave = 0;
 	Renderer* m_renderer = NULL;
 };
 

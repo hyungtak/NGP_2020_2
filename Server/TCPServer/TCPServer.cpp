@@ -6,7 +6,12 @@ SceneData gameSceneData;
 HANDLE Event;
 HANDLE PThread, GThread, LThread;
 
+// 연결된 소켓 저장
+std::vector<SOCKET> MatchingQueue;
+
 DWORD WINAPI ProcessThread(LPVOID arg);
+
+bool startGame = false;
 
 // 소켓 함수 오류 출력 후 종료
 void err_quit(char *msg)
@@ -40,13 +45,16 @@ DWORD WINAPI LobbyThread(LPVOID arg)
     printf("Running LobbyThread\n");
     int retval;
 
+    // 윈속 초기화
     WSADATA wsa;
     if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
         return 1;
 
+    // socket()
     SOCKET listen_sock = socket(AF_INET, SOCK_STREAM, 0);
     if (listen_sock == INVALID_SOCKET) err_quit("socket()");
 
+    // bind()
     SOCKADDR_IN serveraddr;
     ZeroMemory(&serveraddr, sizeof(serveraddr));
     serveraddr.sin_family = AF_INET;
@@ -55,11 +63,14 @@ DWORD WINAPI LobbyThread(LPVOID arg)
     retval = bind(listen_sock, (SOCKADDR*)&serveraddr, sizeof(serveraddr));
     if (retval == SOCKET_ERROR) err_quit("bind()");
 
+    // listen()
     retval = listen(listen_sock, SOMAXCONN);
     if (retval == SOCKET_ERROR) err_quit("listen()");
 
+    bool playerReady = false;
     KeyInput Input{ 0 };
 
+    // 데이터 통신에 사용할 변수
     SOCKET client_sock;
     SOCKADDR_IN clientaddr;
     int addrlen;
@@ -74,7 +85,7 @@ DWORD WINAPI LobbyThread(LPVOID arg)
             break;
         }
 
-        gameSceneData.MatchingQueue.push_back(client_sock);
+        MatchingQueue.push_back(client_sock);
 
         char ip_addr[100];
         inet_ntop(AF_INET, &clientaddr.sin_addr, ip_addr, 100);
@@ -82,20 +93,20 @@ DWORD WINAPI LobbyThread(LPVOID arg)
         // 접속한 클라이언트 정보 출력
         printf("\n[TCP 서버] 클라이언트 접속: IP 주소=%s, 포트 번호=%d\n",
             ip_addr, ntohs(clientaddr.sin_port));
+        //플레이어 연결됐으니 씬데이터에 플레이어 만들어주기
+        gameSceneData.SetPlayer(client_sock);
 
+        printf("MatchingQueue size : %d \n", MatchingQueue.size());
 
-        int playerNum = gameSceneData.MatchingQueue.size();
-        printf("MatchingQueue size : %d \n", gameSceneData.MatchingQueue.size());
-
-        if (gameSceneData.MatchingQueue.size() == MAX_PLAYER)
+        if (MatchingQueue.size() == MAX_PLAYER)
         {
-            for (int i = 0; i < MAX_PLAYER; ++i)
+            startGame = true;
+            
+            for (int i = 0; i < 3; ++i)
             {
-                gameSceneData.SetPlayer(gameSceneData.MatchingQueue[i]);
-           
-                retval = send(gameSceneData.MatchingQueue[i], (char*)&playerNum, sizeof(playerNum), 0);
+                retval = send(MatchingQueue[i], (char*)&startGame, sizeof(startGame), 0);
 
-                PThread = CreateThread(NULL, 0, ProcessThread, (LPVOID)gameSceneData.MatchingQueue[i], 0, NULL);
+                PThread = CreateThread(NULL, 0, ProcessThread, (LPVOID)MatchingQueue[i], 0, NULL);
                 if (PThread == NULL) { closesocket(client_sock); }
             }
 
@@ -105,9 +116,9 @@ DWORD WINAPI LobbyThread(LPVOID arg)
         }
         else
         {
-            for (int i = 0; i < gameSceneData.MatchingQueue.size(); ++i)
+            for (int i = 0; i < MatchingQueue.size(); ++i)
             {
-                retval = send(gameSceneData.MatchingQueue[i], (char*)&playerNum, sizeof(playerNum), 0);
+                retval = send(MatchingQueue[i], (char*)&startGame, sizeof(startGame), 0);
             }
         }
     }
@@ -116,7 +127,6 @@ DWORD WINAPI LobbyThread(LPVOID arg)
 DWORD WINAPI ProcessThread(LPVOID arg)
 {
     printf("Running ProcessThread\n");
-    gameSceneData.StartGame();
 
     SOCKET client_sock = (SOCKET)arg;
     SOCKADDR_IN clientaddr;
@@ -126,7 +136,7 @@ DWORD WINAPI ProcessThread(LPVOID arg)
     Point Bomb = Pos;
     KeyInput Input{ 0 };
     int addrlen;
-    FinishGame finishFlag = gameSceneData.GetGameFinish();
+
     // 클라이언트 정보 얻기
     addrlen = sizeof(clientaddr);
     getpeername(client_sock, (SOCKADDR*)&clientaddr, &addrlen);
@@ -135,14 +145,12 @@ DWORD WINAPI ProcessThread(LPVOID arg)
     while (1) {
 
         retval = WaitForSingleObject(Event, INFINITE);
-        if (finishFlag.FinishGame)
-            break;
-        finishFlag = gameSceneData.GetGameFinish();
+
         // 데이터 받기 (recv())
-        retval = recv(client_sock, (char*)&Input, sizeof(KeyInput), 0);  
+        retval = recv(client_sock, (char*)&Input, sizeof(KeyInput), 0);    // char : 1byte
         if (retval == SOCKET_ERROR) {
             err_display("recv()");
-            //break;
+            break;
         }
         else if (retval == 0)
             break;
@@ -151,29 +159,21 @@ DWORD WINAPI ProcessThread(LPVOID arg)
 
         // 데이터 보내기 (send())
 
-        MapData gameMapData[MAP_SIZE][MAP_SIZE];
-
+        MapData md[MAP_SIZE][MAP_SIZE];
+        
         for (int i = 0; i < MAP_SIZE; i++)
             for (int j = 0; j < MAP_SIZE; j++)
-               gameMapData[i][j] = gameSceneData.GetMapData(i, j);
-
-        retval = send(client_sock, (char*)&gameMapData, sizeof(gameMapData), 0);
-        if (retval == SOCKET_ERROR)
-        {
-            err_display("Map send()");
-            break;
-        }
-
-        retval = send(client_sock, (char*)&finishFlag, sizeof(FinishGame), 0);
+               md[i][j] = gameSceneData.GetMapData(i, j);
+        retval = send(client_sock, (char*)&md, sizeof(md), 0);
         if (retval == SOCKET_ERROR) 
         {
-            err_display("Finish send()");
+            err_display("XY send()");
             break;
         }
-        
         SetEvent(Event);
     }
 
+    printf("[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n", clientaddr.sin_addr, ntohs(clientaddr.sin_port));
 
     // 윈속 종료
     WSACleanup();
@@ -183,16 +183,9 @@ DWORD WINAPI ProcessThread(LPVOID arg)
 
 DWORD WINAPI GameThread(LPVOID arg)
 {
-
     while (true)
     {
         gameSceneData.Update();
-        if (gameSceneData.GetGameFinish().FinishGame == 1)
-        {
-
-            printf("FinishGame: 1, ExitGameThread()\n");
-            break;
-        }
     }
     return 0;
 }
@@ -211,17 +204,9 @@ int main(int argc, char *argv[])
     if(LThread == NULL)
         printf("Create LThread Error\n");
 
-    while (true)
+    while (1)
     {
         printf("Running main \n");
-        printf("startgame: %d\n", gameSceneData.MatchingQueue.size());
         Sleep(10000);
-
-        if (gameSceneData.GetGameFinish().FinishGame == 1)
-        {
-            Sleep(5000);
-            printf("FinishGame: 1, ExitMain()\n");
-            break;
-        }
     }
 }

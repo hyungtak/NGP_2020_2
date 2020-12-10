@@ -75,19 +75,3 @@ struct MapData
 	bool					isBombFrame;	//ÆøÅº ºÒ±æÀÌ ÀÖ´ÂÁö
 	PlayerColor				playerColor;
 };
-
-
-/////////////////////////
-enum Winner
-{
-	Winner_RED,
-	Winner_GREEN,
-	Winner_BLUE,
-	Winner_DRAW,
-};
-
-struct FinishGame
-{
-	bool			FinishGame;
-	Winner			Winner;
-};
