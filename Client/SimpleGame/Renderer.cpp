@@ -182,6 +182,105 @@ void Renderer::DrawSolidRect(float x, float y, float z, float sizeX, float sizeY
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void Renderer::DrawP(float x, float y)
+{
+	DrawSolidRect(x - 20.0f, y - 20.0f, 0, 20, 100, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x, y + 20.0f, 0, 40, 20, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x + 30.0f, y, 0, 20, 20, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x, y - 20.0f, 0, 40, 20, 1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+void Renderer::DrawL(float x, float y)
+{
+	DrawSolidRect(x - 20.0f, y - 20.0f, 0, 20, 100, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x, y - 60.0f, 0, 40, 20, 1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+void Renderer::DrawA(float x, float y)
+{
+	DrawSolidRect(x - 20.0f, y - 30.0f, 0, 20, 80, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x + 20.0f, y - 30.0f, 0, 20, 80, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x, y - 20.0f, 0, 20, 20, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x, y + 20.0f, 0, 20, 20, 1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+void Renderer::DrawY(float x, float y)
+{
+	DrawSolidRect(x - 20.0f, y + 10.0f, 0, 20, 40, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x + 20.0f, y + 10.0f, 0, 20, 40, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x, y - 40.0f, 0, 20, 60, 1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+void Renderer::DrawE(float x, float y)
+{
+	DrawSolidRect(x - 20.0f, y - 20.0f, 0, 20, 100, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x, y + 20.0f, 0, 40, 20, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x, y - 20.0f, 0, 20, 20, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x, y - 60.0f, 0, 40, 20, 1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+void Renderer::DrawR(float x, float y)
+{
+	DrawSolidRect(x - 20.0f, y - 20.0f, 0, 20, 100, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x, y + 20.0f, 0, 40, 20, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x + 30.0f, y, 0, 20, 20, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x, y - 20.0f, 0, 40, 20, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x + 20.0f, y - 40.0f, 0, 20, 20, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x + 40.0f, y - 60.0f, 0, 20, 20, 1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+void Renderer::DrawC(float x, float y)
+{
+	DrawSolidRect(x - 30.0f, y - 20.0f, 0, 20, 60, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x, y + 20.0f, 0, 40, 20, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x, y - 60.0f, 0, 40, 20, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x + 30.0f, y, 0, 20, 20, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x + 30.0f, y - 40.0f, 0, 20, 20, 1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+void Renderer::DrawO(float x, float y)
+{
+	DrawSolidRect(x - 20.0f, y - 20.0f, 0, 20, 60, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x + 20.0f, y - 20.0f, 0, 20, 60, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x, y + 20.0f, 0, 20, 20, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x, y - 60.0f, 0, 20, 20, 1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+void Renderer::DrawW(float x, float y)
+{
+	DrawSolidRect(x - 40.0f, y - 10.0f, 0, 20, 80, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x, y - 20.0f, 0, 20, 60, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x + 40.0f, y - 10.0f, 0, 20, 80, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x - 20.0f, y - 60.0f, 0, 20, 20, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x + 20.0f, y - 60.0f, 0, 20, 20, 1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+void Renderer::DrawI(float x, float y)
+{
+	DrawSolidRect(x, y - 20.0f, 0, 20, 80, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x, y + 20.0f, 0, 60, 20, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x, y - 60.0f, 0, 60, 20, 1.0f, 1.0f, 1.0f, 1.0f);
+
+}
+
+void Renderer::DrawN(float x, float y)
+{
+	DrawSolidRect(x - 40.0f, y - 20.0f, 0, 20, 100, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x, y - 20.0f, 0, 20, 60, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x + 40.0f, y - 20.0f, 0, 20, 100, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x - 20.0f, y + 20.0f, 0, 20, 20, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x + 20.0f, y - 60.0f, 0, 20, 20, 1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+void Renderer::DrawD(float x, float y)
+{
+	DrawSolidRect(x - 20.0f, y - 20.0f, 0, 20, 100, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x + 20.0f, y - 20.0f, 0, 20, 60, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x, y - 60.0f, 0, 20, 20, 1.0f, 1.0f, 1.0f, 1.0f);
+	DrawSolidRect(x, y + 20.0f, 0, 20, 20, 1.0f, 1.0f, 1.0f, 1.0f);
+
+}
+
 void Renderer::GetGLPosition(float x, float y, float* newX, float* newY)
 {
 	*newX = (x * 2.f / (float)m_WindowSizeX) - 0.85f;

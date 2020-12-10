@@ -20,6 +20,7 @@
 GSEGame* g_game = NULL;
 GSELobby* g_lobby = NULL;
 GSEFinishScene* g_finishscene = NULL;
+
 KeyInput g_inputs;
 int playerNum = 0;
 FinishGame fg;
@@ -46,7 +47,7 @@ void RenderScene(int temp)
     {
         g_finishscene->RendererScene(fg.Winner);
     }
-    else if (isPlay)
+    else
     {
         if (playerNum == 3)
         {
@@ -260,6 +261,8 @@ int main(int argc, char* argv[])
     glutMainLoop();
 
     delete g_game;
+    delete g_lobby;
+    delete g_finishscene;
 
     // closesocket()
     closesocket(sock);
