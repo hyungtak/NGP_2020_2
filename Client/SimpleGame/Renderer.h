@@ -16,6 +16,20 @@ public:
 	bool IsInitialized();
 	void DrawSolidRect(float x, float y, float z, float sizeX, float sizeY, float r, float g, float b, float a);
 
+	void DrawP(float x, float y);
+	void DrawL(float x, float y);
+	void DrawA(float x, float y);
+	void DrawY(float x, float y);
+	void DrawE(float x, float y);
+	void DrawR(float x, float y);
+	void DrawC(float x, float y);
+	void DrawO(float x, float y);
+
+	void DrawW(float x, float y);
+	void DrawI(float x, float y);
+	void DrawN(float x, float y);
+	void DrawD(float x, float y);
+
 private:
 	void Initialize(int windowSizeX, int windowSizeY);
 	bool ReadFile(char* filename, std::string* target);
