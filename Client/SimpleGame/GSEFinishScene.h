@@ -3,16 +3,19 @@
 #include "Renderer.h"
 #include "GSEGlobal.h"
 
-class GSELobby
+class GSEFinishScene
 {
 public:
-	GSELobby();
-	~GSELobby();
+	GSEFinishScene();
+	~GSEFinishScene();
 
 	void RendererScene(int num);
 	
+	void WinPlayer(int playerNum);
+	void DrawPlayers();
+
 private:
-	int playerNumSave = 0;
 	Renderer* m_renderer = NULL;
 };
 
+	
