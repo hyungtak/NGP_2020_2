@@ -6,7 +6,11 @@ SceneData gameSceneData;
 HANDLE Event;
 HANDLE PThread, GThread, LThread;
 
+FinishGame finishFlag;
+
 DWORD WINAPI ProcessThread(LPVOID arg);
+
+
 
 
 // 소켓 함수 오류 출력 후 종료
@@ -141,7 +145,7 @@ DWORD WINAPI ProcessThread(LPVOID arg)
         retval = recv(client_sock, (char*)&Input, sizeof(KeyInput), 0);  
         if (retval == SOCKET_ERROR) {
             err_display("recv()");
-            break;
+            //break;
         }
         else if (retval == 0)
             break;
@@ -151,7 +155,7 @@ DWORD WINAPI ProcessThread(LPVOID arg)
         // 데이터 보내기 (send())
 
         MapData gameMapData[MAP_SIZE][MAP_SIZE];
-        FinishGame finishFlag = gameSceneData.GetGameFinish();
+        finishFlag = gameSceneData.GetGameFinish();
 
         for (int i = 0; i < MAP_SIZE; i++)
             for (int j = 0; j < MAP_SIZE; j++)
@@ -170,6 +174,7 @@ DWORD WINAPI ProcessThread(LPVOID arg)
             err_display("Finish send()");
             break;
         }
+        
         SetEvent(Event);
     }
 
@@ -182,6 +187,7 @@ DWORD WINAPI ProcessThread(LPVOID arg)
 
 DWORD WINAPI GameThread(LPVOID arg)
 {
+
     while (true)
     {
         gameSceneData.Update();
@@ -203,10 +209,16 @@ int main(int argc, char *argv[])
     if(LThread == NULL)
         printf("Create LThread Error\n");
 
-    while (1)
+    while (true)
     {
         printf("Running main \n");
         printf("startgame: %d\n", gameSceneData.MatchingQueue.size());
         Sleep(10000);
+
+        if (finishFlag.FinishGame == 1)
+        {
+            printf("FinishGame: 1, ExitMain()\n");
+            return false;
+        }
     }
 }
